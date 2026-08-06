@@ -1,0 +1,82 @@
+:root {
+  --bg-color: #0d1117;
+  --bg-panel: #11151c;
+  --text-primary: #e6e4df; /* bone/off-white */
+  --text-muted: #8b949e;
+  --accent-color: #D4914A;
+  --border-color: rgba(230, 228, 223, 0.15);
+  
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Outfit', sans-serif; /* Fallback for page titles */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography */
+h1, h2, h3 {
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Layout */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Panels */
+.panel {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  position: relative;
+}
+
+/* Utilities */
+.text-accent {
+  color: var(--accent-color);
+}
+
+/* Animations - Strictly none unless data changes */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

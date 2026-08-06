@@ -1,0 +1,100 @@
+.bv-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.chart-panel {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.bar-chart-container {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.chart-bars {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  align-items: flex-end;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25%;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.bar {
+  width: 100%;
+  background-color: var(--border-color);
+  position: relative;
+  transition: height 0.5s ease-out;
+  display: flex;
+  justify-content: center;
+}
+
+.bar.model {
+  background-color: var(--accent-color);
+}
+
+.bar-label {
+  position: absolute;
+  top: -25px;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.bar-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+}
+
+.sensitivity-note {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.methodology-panel {
+  flex: 1;
+}
+
+.methodology-content {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.methodology-content ul {
+  list-style-type: none;
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border-color);
+}
+
+.methodology-content strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}

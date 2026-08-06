@@ -1,0 +1,36 @@
+.risk-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.risk-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.segmented-bar {
+  display: flex;
+  gap: 2px;
+  height: 24px;
+  margin-bottom: 1rem;
+}
+
+.segment {
+  flex: 1;
+  border: 1px solid rgba(230, 228, 223, 0.1);
+  transition: background-color 0.2s;
+}
+
+.segment.filled {
+  border-color: rgba(212, 145, 74, 0.5); /* Accent color border */
+}
+
+.confidence-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

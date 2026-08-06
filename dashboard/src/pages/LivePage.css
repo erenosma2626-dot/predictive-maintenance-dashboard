@@ -1,0 +1,22 @@
+.live-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.top-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  height: 300px;
+}
+
+.middle-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.bottom-row {
+  margin-top: auto;
+}

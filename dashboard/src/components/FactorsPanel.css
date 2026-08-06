@@ -1,0 +1,50 @@
+.factors-panel {
+  width: 100%;
+  min-height: 120px;
+  transition: all 0.3s ease;
+}
+
+.factors-panel.alert-state {
+  border: 1px solid var(--accent-color);
+  background-color: rgba(212, 145, 74, 0.05);
+}
+
+.alert-message {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.factors-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0.5rem;
+  height: 100%;
+}
+
+.factor-cell {
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.factor-cell.empty {
+  opacity: 0.3;
+}
+
+.factor-content {
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.factor-dir {
+  color: var(--accent-color);
+}

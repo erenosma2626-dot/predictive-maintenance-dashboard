@@ -4,3 +4,6 @@ data/raw/**/*.npy
 *.pt
 __pycache__/
 .ipynb_checkpoints/
+node_modules/
+.env
+.DS_Store
