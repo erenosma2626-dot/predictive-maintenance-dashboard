@@ -93,3 +93,72 @@ class SyntheticEngineStream:
             "maintenance_flag": pred,
             "maintenance_probability": round(float(proba), 3),
         }
+
+
+def explain_prediction(explainer, X_row, feature_names, top_n=3):
+    """Return top-N SHAP-contributing features for a single prediction row."""
+    shap_vals = explainer.shap_values(X_row)
+    contributions = shap_vals[0, :, 1]
+    contrib_df = pd.DataFrame({"feature": feature_names, "shap_value": contributions})
+    return contrib_df.sort_values("shap_value", key=abs, ascending=False).head(top_n)
+
+
+def format_alert_message(engine_id, cycle, total_lifespan, probability, top_features_df):
+    risk_level = "HIGH" if probability >= 0.7 else "MODERATE" if probability >= 0.3 else "LOW"
+    lines = [
+        f"ALERT — Engine {engine_id}, Cycle {cycle}/{total_lifespan}",
+        f"Risk probability: {probability:.2f} ({risk_level})",
+        "",
+    ]
+    direction_word = lambda v: "elevated" if v > 0 else "suppressed"
+    primary = top_features_df.iloc[0]
+    lines.append(
+        f"Primary contributing signal: {primary[\'feature\']} "
+        f"({primary[\'shap_value\']:+.3f} SHAP contribution, {direction_word(primary[\'shap_value\'])} risk)"
+    )
+    if len(top_features_df) > 1:
+        secondary = top_features_df.iloc[1]
+        lines.append(f"Secondary: {secondary[\'feature\']} ({secondary[\'shap_value\']:+.3f})")
+    lines.append("")
+    stage_fraction = cycle / total_lifespan
+    confidence = "validated (late-stage)" if stage_fraction >= 0.8 else "unvalidated (early/mid-stage)"
+    lines.append(
+        f"Confidence basis: {confidence}. Model precision ~0.94 at validated stages; "
+        f"early-stage reliability not established below ~80% of typical service life."
+    )
+    return "\n".join(lines)
+
+
+class SyntheticEngineStreamWithExplain(SyntheticEngineStream):
+    """SyntheticEngineStream extended with per-tick SHAP explanations."""
+
+    def __init__(self, train_df, sensors, feature_cols, model, explainer, seed=0):
+        self.explainer = explainer
+        super().__init__(train_df, sensors, feature_cols, model, seed=seed)
+
+    def tick(self):
+        base_result = super().tick()
+        window = self.current_engine.iloc[: self.cycle_idx]
+        feats = {}
+        for s in self.sensors:
+            vals = window[s].values
+            cycles = window["time_in_cycles"].values
+            feats[s] = vals[-1]
+            feats[f"{s}_rm"] = vals[-10:].mean()
+            feats[f"{s}_dev"] = vals[-1] - vals[0]
+            feats[f"{s}_trend"] = np.polyfit(cycles, vals, 1)[0] if len(vals) > 1 else 0.0
+        X_full = pd.DataFrame([feats])[self.feature_cols]
+
+        top_feats = explain_prediction(self.explainer, X_full, self.feature_cols, top_n=2)
+        message = format_alert_message(
+            engine_id=f"SYN-{base_result[\'engine_source_unit\']}",
+            cycle=base_result["cycle"],
+            total_lifespan=base_result["engine_total_lifespan"],
+            probability=base_result["maintenance_probability"],
+            top_features_df=top_feats,
+        )
+        base_result["explanation"] = {
+            "top_features": top_feats.to_dict("records"),
+            "message": message,
+        }
+        return base_result
