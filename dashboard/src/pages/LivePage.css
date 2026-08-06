@@ -13,8 +13,14 @@
 }
 
 .middle-row {
-  display: flex;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  height: 250px;
+}
+
+.engine-wrapper {
+  height: 100%;
 }
 
 .bottom-row {

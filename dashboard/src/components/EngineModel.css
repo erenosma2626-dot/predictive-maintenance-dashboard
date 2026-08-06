@@ -1,0 +1,42 @@
+.engine-container {
+  background-color: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Make sure it fills the grid cell */
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.engine-container.alert {
+  border-color: var(--alert-color);
+  box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+}
+
+.engine-warning {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--alert-color);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 77, 77, 0.8);
+  z-index: 20;
+  pointer-events: none;
+  animation: pulse-text 1s infinite alternate;
+}
+
+@keyframes pulse-text {
+  from { opacity: 0.5; }
+  to { opacity: 1; }
+}

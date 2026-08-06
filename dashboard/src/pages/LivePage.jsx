@@ -7,6 +7,7 @@ import LiveTelemetry from '../components/LiveTelemetry';
 import RiskIndicator from '../components/RiskIndicator';
 import FactorsPanel from '../components/FactorsPanel';
 import LogPanel from '../components/LogPanel';
+import EngineModel from '../components/EngineModel';
 
 const LivePage = () => {
   const [currentData, setCurrentData] = useState(null);
@@ -67,6 +68,9 @@ const LivePage = () => {
       </div>
       
       <div className="middle-row">
+        <div className="engine-wrapper">
+          <EngineModel isAlert={isAlert} maintenanceProbability={currentData.maintenance_probability} />
+        </div>
         <FactorsPanel data={currentData} isAlert={isAlert} />
       </div>
 
