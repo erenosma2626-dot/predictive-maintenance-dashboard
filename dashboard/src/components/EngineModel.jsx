@@ -48,10 +48,10 @@ const EngineObject = ({ isAlert, maintenanceProbability }) => {
     // Add a slight shake/jitter to the whole engine only if alert is high
     if (engineRef.current) {
       if (isAlert) {
-        engineRef.current.position.y = -1.2 + Math.sin(state.clock.elapsedTime * 20) * 0.05;
+        engineRef.current.position.y = -1.5 + Math.sin(state.clock.elapsedTime * 20) * 0.05;
         engineRef.current.position.x = Math.cos(state.clock.elapsedTime * 25) * 0.05;
       } else {
-        engineRef.current.position.y = THREE.MathUtils.lerp(engineRef.current.position.y, -1.2, 0.1);
+        engineRef.current.position.y = THREE.MathUtils.lerp(engineRef.current.position.y, -1.5, 0.1);
         engineRef.current.position.x = THREE.MathUtils.lerp(engineRef.current.position.x, 0, 0.1);
       }
     }
@@ -62,7 +62,7 @@ const EngineObject = ({ isAlert, maintenanceProbability }) => {
       ref={engineRef}
       object={scene} 
       scale={1.5} 
-      position={[0, -1.2, 0]} 
+      position={[0, -1.5, 0]} 
     />
   );
 };
