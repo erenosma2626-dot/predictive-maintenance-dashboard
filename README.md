@@ -1,6 +1,6 @@
 # Predictive Maintenance Dashboard — NASA C-MAPSS Turbofan Engines
 
-**Live demo:** [YOUR_LIVE_LINK_HERE]
+**Live demo:** https://predictive-maintenance-dashboard-git-main-eren25.vercel.app
 
 A live, explainable predictive maintenance system built on NASA's C-MAPSS turbofan
 engine degradation dataset — designed around one non-negotiable rule: **never claim
