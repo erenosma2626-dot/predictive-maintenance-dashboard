@@ -9,6 +9,46 @@ from fastapi.middleware.cors import CORSMiddleware
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
+SENSOR_NAMES = {
+    "s_1": "Total Temp Fan Inlet",
+    "s_2": "Total Temp LPC Outlet",
+    "s_3": "Total Temp HPC Outlet",
+    "s_4": "Total Temp LPT Outlet",
+    "s_5": "Pressure Fan Inlet",
+    "s_6": "Total Pressure Bypass",
+    "s_7": "Total Pressure HPC Outlet",
+    "s_8": "Physical Fan Speed",
+    "s_9": "Physical Core Speed",
+    "s_10": "Engine Pressure Ratio",
+    "s_11": "Static Pressure HPC Outlet",
+    "s_12": "Ratio Fuel Flow to Ps30",
+    "s_13": "Corrected Fan Speed",
+    "s_14": "Corrected Core Speed",
+    "s_15": "Bypass Ratio",
+    "s_16": "Burner Fuel-Air Ratio",
+    "s_17": "Bleed Enthalpy",
+    "s_18": "Demanded Fan Speed",
+    "s_19": "Demanded Corrected Fan Speed",
+    "s_20": "HPT Coolant Bleed",
+    "s_21": "LPT Coolant Bleed"
+}
+
+def format_feature_name(feature_code):
+    base_code = feature_code
+    suffix = ""
+    if feature_code.endswith("_trend"):
+        base_code = feature_code.replace("_trend", "")
+        suffix = " (Trend)"
+    elif feature_code.endswith("_rm"):
+        base_code = feature_code.replace("_rm", "")
+        suffix = " (Rolling Mean)"
+    elif feature_code.endswith("_dev"):
+        base_code = feature_code.replace("_dev", "")
+        suffix = " (Deviation)"
+    
+    real_name = SENSOR_NAMES.get(base_code, base_code)
+    return f"{real_name}{suffix}"
+
 # Try importing the real generator. If it fails due to missing data/model, we will fallback to mock.
 try:
     import pickle
@@ -98,7 +138,11 @@ class MockGenerator:
         ]
         
         riskLevel = "HIGH" if probability >= 0.7 else "MODERATE" if probability >= 0.3 else "LOW"
-        msg = f"ALERT — Engine SYN-{self.engineId}, Cycle {self.cycle}/{self.totalLifespan}\nRisk probability: {probability:.2f} ({riskLevel})\n\nPrimary contributing signal: {topFeatures[0]['feature']} ({topFeatures[0]['shap_value']})\nSecondary: {topFeatures[1]['feature']}"
+        
+        primary_feat_name = format_feature_name(topFeatures[0]['feature'])
+        secondary_feat_name = format_feature_name(topFeatures[1]['feature'])
+        
+        msg = f"ALERT — Engine SYN-{self.engineId}, Cycle {self.cycle}/{self.totalLifespan}\nRisk probability: {probability:.2f} ({riskLevel})\n\nPrimary contributing signal: {primary_feat_name} ({topFeatures[0]['shap_value']})\nSecondary: {secondary_feat_name}"
         
         res = {
             "engine_source_unit": self.engineId,
