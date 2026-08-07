@@ -1,0 +1,31 @@
+{
+  "dataset": "IMS/NASA Bearing Dataset (Sets 1, 2, 3 - 12 bearings)",
+  "data_source_note": "Raw data (~7GB) not included in repo; see README for download link",
+  "created": "2026-08-07T15:55:28.440659",
+  "n_bearings": 12,
+  "feature_columns": [
+    "rms_rm_norm",
+    "kurtosis_rm_norm"
+  ],
+  "feature_engineering": {
+    "rolling_window": 20,
+    "baseline_normalization_frac": 0.1,
+    "note": "raw stat -> 20-file rolling mean -> divided by bearing's own first-10%-of-life mean"
+  },
+  "risk_threshold_pct": 5,
+  "risk_definition": "Last 5% of a bearing's own recorded lifetime, regardless of documented failure cause",
+  "performance": {
+    "leave_one_bearing_out_12fold": {
+      "accuracy": 0.797,
+      "precision": 0.144,
+      "recall": 0.611,
+      "f1": 0.233
+    },
+    "note": "Performance is highly bearing-dependent - see per-bearing grid (Section 8). Roughly half the bearings show clean early-quiet/late-alarm behavior; the rest are noisier throughout."
+  },
+  "known_limitations": [
+    "n=12 bearings total; only 4 have a documented failure mode",
+    "Risk label reflects 'end of recorded life', not verified physical failure for every bearing",
+    "Feature-model reliability varies substantially by bearing (see Section 8 grid)"
+  ]
+}
