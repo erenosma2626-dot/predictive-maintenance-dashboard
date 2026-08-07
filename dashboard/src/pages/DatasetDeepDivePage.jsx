@@ -1,7 +1,97 @@
 import React from 'react';
 import './DatasetDeepDivePage.css';
 
-const DatasetDeepDivePage = () => {
+const DatasetDeepDivePage = ({ dataset }) => {
+  if (dataset === 'bearing') {
+    return (
+      <div className="dd-page fade-in">
+        <div className="dd-grid">
+          {/* Dataset Identity */}
+          <div className="panel">
+            <span className="section-label">DATASET IDENTITY</span>
+            <div className="dd-content">
+              <p><strong>Name:</strong> IMS/NASA Bearing Dataset</p>
+              <p><strong>Source:</strong> Center for Intelligent Maintenance Systems / NASA Ames Prognostics Data Repository</p>
+              <p><strong>Data Access:</strong> Raw data (~7GB) not bundled. <a href="#" className="text-accent">Download from source</a></p>
+              <p><strong>Details:</strong> 3 test-to-failure experiments (Sets 1, 2, 3)</p>
+              <p><strong>Units:</strong> 12 bearings total</p>
+              <p><strong>Specs:</strong> Rexnord ZA-2115 double-row bearings, 2000 RPM constant speed, 6000 lb radial load, ~20kHz sampling</p>
+            </div>
+          </div>
+
+          {/* Feature Engineering */}
+          <div className="panel">
+            <span className="section-label">FEATURE ENGINEERING</span>
+            <div className="dd-content">
+              <p><strong>RMS:</strong> "How strong the vibration is". Rolling-smoothed over 20 files, normalized to early-life baseline.</p>
+              <p className="mt-1"><strong>Kurtosis:</strong> "How sharp/impulsive the vibration pattern is". Same smoothing/normalization applied.</p>
+            </div>
+          </div>
+
+          {/* Model Specs */}
+          <div className="panel">
+            <span className="section-label">MODEL SPECIFICATIONS</span>
+            <div className="dd-content">
+              <p><strong>Algorithm:</strong> Random Forest Classifier</p>
+              <p><strong>Validation:</strong> Leave-one-bearing-out (12 folds)</p>
+              <p><strong>Note:</strong> Every bearing is evaluated as a held-out unit, never trained on itself.</p>
+            </div>
+          </div>
+
+          {/* Discarded */}
+          <div className="panel">
+            <span className="section-label">DISCARDED APPROACHES</span>
+            <div className="dd-content">
+              <ul className="discard-list">
+                <li>
+                  <strong>GMM-HMM:</strong> 
+                  <span className="text-muted"> Automatic transition detection. Inconsistent across bearings.</span>
+                </li>
+                <li>
+                  <strong>3-tier health-state:</strong>
+                  <span className="text-muted"> Worse performance than simple binary classification.</span>
+                </li>
+                <li>
+                  <strong>Continuous RUL regression:</strong>
+                  <span className="text-muted"> Highly unreliable, R² negative in most folds.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Honest Performance Panel */}
+        <div className="panel performance-panel">
+          <span className="section-label text-accent">HONEST PERFORMANCE: RELIABILITY VARIES BY UNIT</span>
+          <div className="performance-content">
+            <div className="perf-text" style={{width: '100%', maxWidth: '100%'}}>
+              <p>
+                Reliability varies by bearing — roughly half show a clean quiet-early/sharp-late-alarm pattern; the rest are noisier throughout their recorded life.
+              </p>
+              <p className="mt-1 text-accent" style={{fontWeight: 500}}>
+                Averaging this away into a single score hides the reality of the model's inconsistency across physical units.
+              </p>
+              <div className="bearing-grid-placeholder" style={{
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(4, 1fr)', 
+                gap: '10px', 
+                marginTop: '1.5rem',
+                opacity: 0.5
+              }}>
+                {Array.from({length: 12}).map((_, i) => (
+                  <div key={i} style={{border: '1px solid var(--border-color)', padding: '10px', textAlign: 'center', fontSize: '0.8rem'}}>
+                    Bearing {i + 1}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    );
+  }
+
   return (
     <div className="dd-page fade-in">
       

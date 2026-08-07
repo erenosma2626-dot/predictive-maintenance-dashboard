@@ -45,8 +45,39 @@ const formatFeatureName = (featureCode) => {
   return `${realName}${suffix}`;
 };
 
-const FactorsPanel = ({ data, isAlert }) => {
-  const { top_features, message } = data.explanation;
+const FactorsPanel = ({ data, isAlert, dataset }) => {
+  if (dataset === 'bearing') {
+    return (
+      <div className="panel factors-panel bearing-factors">
+        <div className="bearing-metrics-grid">
+          <div className="metric-box">
+            <span className="metric-label">ACCURACY</span>
+            <span className="metric-value">0.797</span>
+          </div>
+          <div className="metric-box">
+            <span className="metric-label">PRECISION</span>
+            <span className="metric-value">0.144</span>
+          </div>
+          <div className="metric-box">
+            <span className="metric-label">RECALL</span>
+            <span className="metric-value">0.611</span>
+          </div>
+          <div className="metric-box">
+            <span className="metric-label">F1 SCORE</span>
+            <span className="metric-value">0.233</span>
+          </div>
+        </div>
+        <div className="bearing-explanation-box">
+          <span className="section-label">MODEL LIMITATIONS & WARNING</span>
+          <p className="explanation-text">
+            This model generates a high rate of false signals in practice. Due to the limited sample size (n=12) and varying reliability across units, a consistently accurate threshold has not yet been established. 
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const { top_features, message } = data.explanation || { top_features: [], message: '' };
 
   if (isAlert) {
     return (

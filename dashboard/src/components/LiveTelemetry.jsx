@@ -1,17 +1,17 @@
 import React from 'react';
 import './LiveTelemetry.css';
 
-const LiveTelemetry = ({ data, history }) => {
+const LiveTelemetry = ({ data, history, dataset }) => {
   // SVG drawing logic for the oscilloscope feel
   const width = 600;
   const height = 200;
   
-  // Extract values for drawing. We use 's_20' as the primary sensor for display
-  const sensorKey = 's_20';
-  const values = history.map(d => d.sensors[sensorKey]);
+  // Extract values for drawing.
+  const sensorKey = dataset === 'bearing' ? 'rms_rm_norm' : 's_20';
+  const values = history.map(d => d.sensors ? d.sensors[sensorKey] : null).filter(v => v !== null && v !== undefined);
   
-  const min = Math.min(...values, 38);
-  const max = Math.max(...values, 40);
+  const min = dataset === 'bearing' ? 0 : Math.min(...values, 38);
+  const max = dataset === 'bearing' ? 4 : Math.max(...values, 40);
   const range = max - min || 1;
 
   const pathD = values.map((val, i) => {

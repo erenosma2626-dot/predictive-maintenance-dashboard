@@ -1,20 +1,14 @@
-# Predictive Maintenance Dashboard — NASA C-MAPSS Turbofan Engines
+# Predictive Maintenance Dashboard — NASA C-MAPSS & IMS Bearing Datasets
 
 **Live demo:** https://predictive-maintenance-dashboard-git-main-eren25.vercel.app
 
-A live, explainable predictive maintenance system built on NASA's C-MAPSS turbofan
-engine degradation dataset — designed around one non-negotiable rule: **never claim
-more certainty than the data actually supports.**
+A live, explainable predictive maintenance system built on NASA's C-MAPSS turbofan engine degradation dataset and the IMS Bearing dataset — designed around one non-negotiable rule: **never claim more certainty than the data actually supports.**
 
 ---
 
 ## What This Is
 
-A synthetic turbofan engine streams sensor data live, tick by tick. A trained model
-flags whether it likely needs maintenance soon, explains *why* using SHAP, and every
-number on screen — including the business case — is traceable back to a documented,
-honestly-validated result. Nothing here is a polished sales pitch; it's an
-instrument panel.
+A synthetic stream of industrial data (turbofan engines or rolling bearings) runs live, tick by tick. A trained model flags whether it likely needs maintenance soon, explains *why* (using SHAP for C-MAPSS, or explicit metric envelopes for bearings), and every number on screen — including the business case — is traceable back to a documented, honestly-validated result. Nothing here is a polished sales pitch; it's an instrument panel.
 
 ---
 
@@ -158,8 +152,8 @@ evaluation.
 
 - **Model & analysis:** Python, scikit-learn, SHAP, pandas/numpy
 - **Backend:** FastAPI (live tick loop, REST + WebSocket)
-- **Database:** Supabase (Postgres) — persists current state + history so the
-  dashboard shows the same live state to every visitor, survives page refreshes
+- **Database:** Supabase (Postgres) — persists current state + history so the dashboard shows the same live state to every visitor, survives page refreshes
+- **Frontend:** React + Vite, Three.js (dynamic 3D digital twins for both Jet Engine and Rolling Bearing)
 - **Hosting:** Render (backend), Vercel (frontend)
 
 ---
@@ -180,7 +174,6 @@ evaluation.
 
 ## Roadmap
 
-- [ ] Additional datasets (bearing degradation, milling tool wear) under the same
-      validation discipline, selectable via a dataset-switcher UI
-- [ ] Sequence-aware modeling (LSTM/GRU) to test whether the early-warning ceiling
-      is a model-class limitation rather than a feature limitation
+- [x] Additional datasets (bearing degradation) under the same validation discipline, selectable via a dataset-switcher UI, complete with dedicated Synthetic Data visualizations and dynamic 3D digital twins.
+- [ ] Additional datasets (milling tool wear).
+- [ ] Sequence-aware modeling (LSTM/GRU) to test whether the early-warning ceiling is a model-class limitation rather than a feature limitation.

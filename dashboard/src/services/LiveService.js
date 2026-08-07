@@ -7,6 +7,8 @@ export class LiveService {
     
     this.onDataReceived = onDataReceived;
     this.ws = null;
+    this.intentionalClose = false;
+    this.reconnectTimer = null;
   }
 
   async fetchCurrentState() {
@@ -40,8 +42,11 @@ export class LiveService {
     };
 
     this.ws.onclose = () => {
-      console.log("WebSocket disconnected. Reconnecting in 5 seconds...");
-      setTimeout(() => this.connect(), 5000);
+      console.log("WebSocket disconnected.");
+      if (!this.intentionalClose) {
+        console.log("Reconnecting in 5 seconds...");
+        this.reconnectTimer = setTimeout(() => this.connect(), 5000);
+      }
     };
 
     this.ws.onerror = (error) => {
@@ -51,8 +56,14 @@ export class LiveService {
   }
 
   disconnect() {
+    this.intentionalClose = true;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
     if (this.ws) {
       this.ws.close();
+      this.ws = null;
     }
   }
 }

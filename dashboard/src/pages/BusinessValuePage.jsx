@@ -1,7 +1,22 @@
 import React from 'react';
 import './BusinessValuePage.css';
 
-const BusinessValuePage = () => {
+const BusinessValuePage = ({ dataset }) => {
+  if (dataset === 'bearing') {
+    return (
+      <div className="bv-page fade-in">
+        <div className="panel placeholder-panel">
+          <div className="placeholder-content">
+            <span className="section-label" style={{textAlign: 'center', display: 'block', marginBottom: '1rem'}}>BUSINESS VALUE MODELING — COMING SOON</span>
+            <p className="placeholder-text">
+              The expected-value framework used for the Turbofan dataset has not yet been calibrated for Bearing data. Switch to Turbofan to see the full analysis.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bv-page fade-in">
       <div className="panel chart-panel">

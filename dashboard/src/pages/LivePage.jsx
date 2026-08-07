@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { LiveService } from '../services/LiveService';
+import React from 'react';
 import './LivePage.css';
 
 // Sub-components to keep code clean
@@ -9,69 +8,21 @@ import FactorsPanel from '../components/FactorsPanel';
 import LogPanel from '../components/LogPanel';
 import EngineModel from '../components/EngineModel';
 
-const LivePage = () => {
-  const [currentData, setCurrentData] = useState(null);
-  const [history, setHistory] = useState([]);
-  const [logs, setLogs] = useState([]);
-  const [isAlert, setIsAlert] = useState(false);
-
-  useEffect(() => {
-    // Handler for incoming data
-    const handleNewData = (newData) => {
-      if (!newData || !newData.sensors) return;
-      
-      setCurrentData(newData);
-      
-      setHistory(prev => {
-        const newHistory = [...prev, newData];
-        if (newHistory.length > 100) return newHistory.slice(newHistory.length - 100);
-        return newHistory;
-      });
-
-      if (newData.maintenance_probability >= 0.3) {
-        setIsAlert(true);
-      } else {
-        setIsAlert(false);
-      }
-
-      if (newData.cycle % 5 === 0 || newData.maintenance_probability >= 0.3) {
-        let msg = `> TICK: Cycle ${newData.cycle} - Prob: ${newData.maintenance_probability.toFixed(3)}`;
-        if (newData.maintenance_probability >= 0.3) {
-          msg = `> WARN: maintenance_flag raised (Prob: ${newData.maintenance_probability.toFixed(3)}) at cycle ${newData.cycle}`;
-        }
-        setLogs(prev => [...prev, msg].slice(-50));
-      }
-    };
-
-    const service = new LiveService(handleNewData);
-
-    // Initial fetch of current state
-    service.fetchCurrentState().then(initData => {
-      if (initData) handleNewData(initData);
-    });
-
-    // Start WebSocket connection
-    service.connect();
-
-    return () => {
-      service.disconnect();
-    };
-  }, []);
-
+const LivePage = ({ dataset, currentData, history, logs, isAlert }) => {
   if (!currentData) return <div className="loading">Initializing Telemetry...</div>;
 
   return (
     <div className="live-page">
       <div className="top-row">
-        <LiveTelemetry data={currentData} history={history} />
-        <RiskIndicator data={currentData} />
+        <LiveTelemetry data={currentData} history={history} dataset={dataset} />
+        <RiskIndicator data={currentData} dataset={dataset} />
       </div>
       
       <div className="middle-row">
         <div className="engine-wrapper">
-          <EngineModel isAlert={isAlert} maintenanceProbability={currentData.maintenance_probability} />
+          <EngineModel isAlert={isAlert} maintenanceProbability={currentData.maintenance_probability} dataset={dataset} />
         </div>
-        <FactorsPanel data={currentData} isAlert={isAlert} />
+        <FactorsPanel data={currentData} isAlert={isAlert} dataset={dataset} />
       </div>
 
       <div className="bottom-row">

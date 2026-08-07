@@ -5,8 +5,10 @@ import * as THREE from 'three';
 import './EngineModel.css';
 
 // The actual 3D model component
-const EngineObject = ({ isAlert, maintenanceProbability }) => {
-  const { scene, nodes } = useGLTF('/jet-engine.glb');
+const EngineObject = ({ isAlert, maintenanceProbability, dataset }) => {
+  const modelPath = dataset === 'bearing' ? '/rolling-bearing.glb' : '/jet-engine.glb';
+  const baseY = dataset === 'bearing' ? -0.2 : -1.5; // Bearing is naturally smaller/centered differently
+  const { scene, nodes } = useGLTF(modelPath);
   const engineRef = useRef();
   const fanGroupRef = useRef();
 
@@ -28,12 +30,19 @@ const EngineObject = ({ isAlert, maintenanceProbability }) => {
         child.material = material;
       }
     });
-    // Find the group containing all fan blades to rotate them together
-    // In the GLTF structure, fan_blade_1 is inside a single-blade group, which is inside the all-blades group.
-    if (nodes.fan_blade_1 && nodes.fan_blade_1.parent && nodes.fan_blade_1.parent.parent) {
+    // Find the group containing all fan blades to rotate them together (CMAPSS only)
+    if (dataset === 'cmapss' && nodes.fan_blade_1 && nodes.fan_blade_1.parent && nodes.fan_blade_1.parent.parent) {
       fanGroupRef.current = nodes.fan_blade_1.parent.parent;
+    } else if (dataset === 'bearing') {
+      // For bearing, target the inner spinning parts
+      const partsToSpin = [];
+      if (nodes.rotor_assembly) partsToSpin.push(nodes.rotor_assembly);
+      if (nodes.cage_retainer) partsToSpin.push(nodes.cage_retainer);
+      
+      // We store an array of objects to spin
+      fanGroupRef.current = partsToSpin;
     }
-  }, [scene, material, nodes]);
+  }, [scene, material, nodes, dataset]);
 
   useFrame((state) => {
     // Rotate the blades!
@@ -42,16 +51,23 @@ const EngineObject = ({ isAlert, maintenanceProbability }) => {
       if (isAlert) {
         speed = 0.5 + (maintenanceProbability * 0.5); // spin much faster on alert
       }
-      fanGroupRef.current.rotation.y += speed;
+      
+      if (dataset === 'bearing' && Array.isArray(fanGroupRef.current)) {
+        fanGroupRef.current.forEach(part => {
+          part.rotation.y -= speed; // Bearings usually spin on Y in this coordinate system
+        });
+      } else if (fanGroupRef.current && !Array.isArray(fanGroupRef.current)) {
+        fanGroupRef.current.rotation.y += speed;
+      }
     }
 
     // Add a slight shake/jitter to the whole engine only if alert is high
     if (engineRef.current) {
       if (isAlert) {
-        engineRef.current.position.y = -1.5 + Math.sin(state.clock.elapsedTime * 20) * 0.05;
+        engineRef.current.position.y = baseY + Math.sin(state.clock.elapsedTime * 20) * 0.05;
         engineRef.current.position.x = Math.cos(state.clock.elapsedTime * 25) * 0.05;
       } else {
-        engineRef.current.position.y = THREE.MathUtils.lerp(engineRef.current.position.y, -1.5, 0.1);
+        engineRef.current.position.y = THREE.MathUtils.lerp(engineRef.current.position.y, baseY, 0.1);
         engineRef.current.position.x = THREE.MathUtils.lerp(engineRef.current.position.x, 0, 0.1);
       }
     }
@@ -62,7 +78,7 @@ const EngineObject = ({ isAlert, maintenanceProbability }) => {
       ref={engineRef}
       object={scene} 
       scale={1.5} 
-      position={[0, -1.5, 0]} 
+      position={[0, baseY, 0]} 
     />
   );
 };
@@ -82,7 +98,7 @@ const CameraController = ({ resetTrigger }) => {
 };
 
 // The wrapper container with the Canvas
-const EngineModel = ({ isAlert, maintenanceProbability }) => {
+const EngineModel = ({ isAlert, maintenanceProbability, dataset }) => {
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const handleResetCamera = () => {
@@ -114,7 +130,7 @@ const EngineModel = ({ isAlert, maintenanceProbability }) => {
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 10]} intensity={1} />
         <React.Suspense fallback={null}>
-          <EngineObject isAlert={isAlert} maintenanceProbability={maintenanceProbability} />
+          <EngineObject isAlert={isAlert} maintenanceProbability={maintenanceProbability} dataset={dataset} />
           <Environment preset="city" />
         </React.Suspense>
         <OrbitControls enableZoom={true} enablePan={true} autoRotate={false} />
@@ -123,7 +139,8 @@ const EngineModel = ({ isAlert, maintenanceProbability }) => {
   );
 };
 
-// Preload the model to prevent popping
+// Preload the models to prevent popping
 useGLTF.preload('/jet-engine.glb');
+useGLTF.preload('/rolling-bearing.glb');
 
 export default EngineModel;
