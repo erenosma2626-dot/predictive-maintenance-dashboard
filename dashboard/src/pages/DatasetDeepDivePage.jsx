@@ -1,27 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './DatasetDeepDivePage.css';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const DatasetDeepDivePage = ({ dataset }) => {
+  const { t } = useLanguage();
+  const [selectedUnit, setSelectedUnit] = useState(null);
+
   if (dataset === 'bearing') {
     return (
-      <div className="dd-page fade-in">
+      <div className="deepdive-page fade-in">
+        {/* HEADER SECTION */}
+        <div className="panel header-panel bearing-header">
+          <div className="bearing-header-content">
+            <div>
+              <span className="section-label">{t('deepdive.bearing_title')}</span>
+              <h2 className="bearing-title">{t('deepdive.bearing_subtitle')}</h2>
+              <p className="deepdive-desc mt-1">
+                {t('deepdive.bearing_desc_1')}
+              </p>
+              <p className="deepdive-desc mt-1">
+                {t('deepdive.bearing_desc_2')}
+              </p>
+            </div>
+            <div className="bearing-info-box">
+              <p className="deepdive-desc">
+                {t('deepdive.bearing_desc_3')}
+              </p>
+              <ul className="bearing-checklist">
+                <li>{t('deepdive.bearing_list_1')}</li>
+                <li>{t('deepdive.bearing_list_2')}</li>
+                <li>{t('deepdive.bearing_list_3')}</li>
+              </ul>
+              <p className="text-accent mt-1" style={{fontSize: '0.85rem'}}>
+                ► {t('deepdive.bearing_click')}
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="dd-grid">
           {/* Dataset Identity */}
           <div className="panel">
-            <span className="section-label">DATASET IDENTITY</span>
+            <span className="section-label">{t('deepdive.dataset_identity')}</span>
             <div className="dd-content">
-              <p><strong>Name:</strong> IMS/NASA Bearing Dataset</p>
-              <p><strong>Source:</strong> Center for Intelligent Maintenance Systems / NASA Ames Prognostics Data Repository</p>
-              <p><strong>Data Access:</strong> Raw data (~7GB) not bundled. <a href="#" className="text-accent">Download from source</a></p>
-              <p><strong>Details:</strong> 3 test-to-failure experiments (Sets 1, 2, 3)</p>
-              <p><strong>Units:</strong> 12 bearings total</p>
-              <p><strong>Specs:</strong> Rexnord ZA-2115 double-row bearings, 2000 RPM constant speed, 6000 lb radial load, ~20kHz sampling</p>
+              <p><strong>{t('deepdive.name')}</strong> IMS Bearing Dataset (Rexnord)</p>
+              <p><strong>{t('deepdive.source')}</strong> <a href="#" className="text-accent">NASA Prognostics Data Repository</a></p>
+              <p><strong>{t('deepdive.details')}</strong> 3 test-to-failure experiments (Sets 1, 2, 3)</p>
+              <p><strong>{t('deepdive.units')}</strong> 12 bearings total</p>
+              <p><strong>{t('deepdive.specs')}</strong> Rexnord ZA-2115 double-row bearings, 2000 RPM constant speed, 6000 lb radial load, ~20kHz sampling</p>
             </div>
           </div>
 
           {/* Feature Engineering */}
           <div className="panel">
-            <span className="section-label">FEATURE ENGINEERING</span>
+            <span className="section-label">{t('deepdive.feature_engineering')}</span>
             <div className="dd-content">
               <p><strong>RMS:</strong> "How strong the vibration is". Rolling-smoothed over 20 files, normalized to early-life baseline.</p>
               <p className="mt-1"><strong>Kurtosis:</strong> "How sharp/impulsive the vibration pattern is". Same smoothing/normalization applied.</p>
@@ -30,30 +62,30 @@ const DatasetDeepDivePage = ({ dataset }) => {
 
           {/* Model Specs */}
           <div className="panel">
-            <span className="section-label">MODEL SPECIFICATIONS</span>
+            <span className="section-label">{t('deepdive.model_specs')}</span>
             <div className="dd-content">
-              <p><strong>Algorithm:</strong> Random Forest Classifier</p>
-              <p><strong>Validation:</strong> Leave-one-bearing-out (12 folds)</p>
-              <p><strong>Note:</strong> Every bearing is evaluated as a held-out unit, never trained on itself.</p>
+              <p><strong>{t('deepdive.algorithm')}</strong> Random Forest Classifier</p>
+              <p><strong>{t('deepdive.validation')}</strong> Leave-one-bearing-out (12 folds)</p>
+              <p><strong>{t('deepdive.note')}</strong> Every bearing is evaluated as a held-out unit, never trained on itself.</p>
             </div>
           </div>
 
           {/* Discarded */}
           <div className="panel">
-            <span className="section-label">DISCARDED APPROACHES</span>
+            <span className="section-label">{t('deepdive.discarded')}</span>
             <div className="dd-content">
               <ul className="discard-list">
                 <li>
-                  <strong>GMM-HMM:</strong> 
-                  <span className="text-muted"> Automatic transition detection. Inconsistent across bearings.</span>
+                  <strong>{t('deepdive.bearing_discard_1_title')}</strong> 
+                  <span className="text-muted"> {t('deepdive.bearing_discard_1_desc')}</span>
                 </li>
                 <li>
-                  <strong>3-tier health-state:</strong>
-                  <span className="text-muted"> Worse performance than simple binary classification.</span>
+                  <strong>{t('deepdive.bearing_discard_2_title')}</strong>
+                  <span className="text-muted"> {t('deepdive.bearing_discard_2_desc')}</span>
                 </li>
                 <li>
-                  <strong>Continuous RUL regression:</strong>
-                  <span className="text-muted"> Highly unreliable, R² negative in most folds.</span>
+                  <strong>{t('deepdive.bearing_discard_3_title')}</strong>
+                  <span className="text-muted"> {t('deepdive.bearing_discard_3_desc')}</span>
                 </li>
               </ul>
             </div>
@@ -62,25 +94,59 @@ const DatasetDeepDivePage = ({ dataset }) => {
 
         {/* Honest Performance Panel */}
         <div className="panel performance-panel">
-          <span className="section-label text-accent">HONEST PERFORMANCE: RELIABILITY VARIES BY UNIT</span>
+          <span className="section-label text-accent">{t('deepdive.honest_perf_bearing')}</span>
           <div className="performance-content">
             <div className="perf-text" style={{width: '100%', maxWidth: '100%'}}>
               <p>
-                Reliability varies by bearing — roughly half show a clean quiet-early/sharp-late-alarm pattern; the rest are noisier throughout their recorded life.
+                {t('deepdive.bearing_perf_text1')}
               </p>
               <p className="mt-1 text-accent" style={{fontWeight: 500}}>
-                Averaging this away into a single score hides the reality of the model's inconsistency across physical units.
+                {t('deepdive.bearing_perf_text2')}
               </p>
-              <div className="bearing-grid-placeholder" style={{
+              <div className="bearing-grid-container" style={{
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(4, 1fr)', 
-                gap: '10px', 
-                marginTop: '1.5rem',
-                opacity: 0.5
+                gap: '15px', 
+                marginTop: '1.5rem'
               }}>
                 {Array.from({length: 12}).map((_, i) => (
-                  <div key={i} style={{border: '1px solid var(--border-color)', padding: '10px', textAlign: 'center', fontSize: '0.8rem'}}>
-                    Bearing {i + 1}
+                  <div key={i} 
+                    style={{
+                      border: '1px solid var(--border-color)', 
+                      borderRadius: '6px',
+                      padding: '10px', 
+                      textAlign: 'center', 
+                      cursor: 'zoom-in',
+                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                      backgroundColor: 'rgba(0,0,0,0.2)'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.02)';
+                      e.currentTarget.style.boxShadow = '0 0 10px rgba(255, 176, 0, 0.1)';
+                      e.currentTarget.style.borderColor = 'var(--accent-color)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = 'none';
+                      e.currentTarget.style.borderColor = 'var(--border-color)';
+                    }}
+                    onClick={() => setSelectedUnit(i + 1)}
+                  >
+                    <div style={{ fontSize: '0.85rem', marginBottom: '8px', fontWeight: 'bold', color: 'var(--text-primary)', letterSpacing: '0.05em' }}>
+                      {t('deepdive.unit')} {i + 1}
+                    </div>
+                    <img 
+                      src={`/bearing_plot_${i + 1}.png`} 
+                      alt={`Unit ${i + 1}`} 
+                      style={{
+                        width: '100%', 
+                        borderRadius: '4px',
+                        filter: 'invert(0.85) hue-rotate(180deg) brightness(1.2) contrast(1.1)', 
+                      }} 
+                    />
+                    <div className="enlarge-hint" style={{ fontSize: '0.75rem', marginTop: '5px', color: 'var(--text-muted)' }}>
+                      {t('deepdive.bearing_enlarge', 'Click to enlarge')}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -88,31 +154,56 @@ const DatasetDeepDivePage = ({ dataset }) => {
           </div>
         </div>
 
+        {/* Modal for Enlarge Image */}
+        {selectedUnit && (
+          <div className="modal-overlay fade-in" onClick={() => setSelectedUnit(null)}>
+            <div className="modal-content fade-in" onClick={(e) => e.stopPropagation()}>
+              <button className="close-btn" onClick={() => setSelectedUnit(null)}>×</button>
+              <h3 className="modal-title">{t('deepdive.unit')} {selectedUnit} — DETAILED VIEW</h3>
+              <div className="modal-image-container" style={{ padding: '20px', backgroundColor: '#111', borderRadius: '8px' }}>
+                <img 
+                  src={`/bearing_plot_${selectedUnit}.png`} 
+                  alt={`Unit ${selectedUnit}`} 
+                  style={{
+                    maxWidth: '100%', 
+                    maxHeight: '70vh', 
+                    filter: 'invert(0.85) hue-rotate(180deg) brightness(1.2) contrast(1.1)'
+                  }}
+                />
+              </div>
+              <div className="modal-legend">
+                <span className="legend-item"><span className="legend-dot model-dot"></span> {t('deepdive.model_prediction')}</span>
+                <span className="legend-item"><span className="legend-dot signal-dot"></span> {t('deepdive.sensor_signal')}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     );
   }
 
   return (
-    <div className="dd-page fade-in">
+    <div className="deepdive-page fade-in">
       
       <div className="dd-grid">
         {/* Dataset Identity */}
         <div className="panel">
-          <span className="section-label">DATASET IDENTITY</span>
+          <span className="section-label">{t('deepdive.dataset_identity')}</span>
           <div className="dd-content">
-            <p><strong>Name:</strong> NASA C-MAPSS FD001</p>
-            <p><strong>Source:</strong> <a href="#" className="text-accent">NASA Prognostics Data Repository</a></p>
-            <p><strong>Training Set:</strong> n=100 engines</p>
-            <p><strong>Test Set:</strong> n=100 engines</p>
-            <p><strong>Condition:</strong> Single operating condition</p>
-            <p><strong>Fault Mode:</strong> HPC degradation</p>
-            <p><strong>Sensors:</strong> 21 total (14 active after removing constants)</p>
+            <p><strong>{t('deepdive.name')}</strong> NASA C-MAPSS FD001</p>
+            <p><strong>{t('deepdive.source')}</strong> <a href="#" className="text-accent">NASA Prognostics Data Repository</a></p>
+            <p><strong>{t('deepdive.train_set')}</strong> n=100 engines</p>
+            <p><strong>{t('deepdive.test_set')}</strong> n=100 engines</p>
+            <p><strong>{t('deepdive.condition')}</strong> Single operating condition</p>
+            <p><strong>{t('deepdive.fault_mode')}</strong> HPC degradation</p>
+            <p><strong>{t('deepdive.sensors')}</strong> 21 total (14 active after removing constants)</p>
           </div>
         </div>
 
         {/* Feature Engineering */}
         <div className="panel">
-          <span className="section-label">FEATURE ENGINEERING</span>
+          <span className="section-label">{t('deepdive.feature_engineering')}</span>
           <div className="dd-content">
             <p><strong>Rolling Mean:</strong> Captures the smoothed recent state over a 10-cycle window.</p>
             <p className="mt-1"><strong>Trend:</strong> Linear slope over the rolling window, capturing the rate of degradation.</p>
@@ -122,11 +213,11 @@ const DatasetDeepDivePage = ({ dataset }) => {
 
         {/* Model Specs */}
         <div className="panel">
-          <span className="section-label">MODEL SPECIFICATIONS</span>
+          <span className="section-label">{t('deepdive.model_specs')}</span>
           <div className="dd-content">
-            <p><strong>Algorithm:</strong> Random Forest Classifier</p>
+            <p><strong>{t('deepdive.algorithm')}</strong> Random Forest Classifier</p>
             <p><strong>Training Split:</strong> Unit-based (strict engine isolation)</p>
-            <p><strong>Leakage Audit:</strong> Passed (No future data contamination in windowing)</p>
+            <p><strong>{t('deepdive.leakage')}</strong> Passed (No future data contamination in windowing)</p>
             <hr className="subtle-hr" />
             <p className="text-muted mt-1" style={{fontSize: '0.8rem'}}>
               <em>Related Literature Note:</em> Advanced approaches like Deep Layer-Recurrent Neural Networks (DL-RNN) 
@@ -138,16 +229,16 @@ const DatasetDeepDivePage = ({ dataset }) => {
 
         {/* What we tried and discarded */}
         <div className="panel">
-          <span className="section-label">DISCARDED APPROACHES</span>
+          <span className="section-label">{t('deepdive.discarded')}</span>
           <div className="dd-content">
             <ul className="discard-list">
               <li>
-                <strong>Stage-matched classification:</strong> 
-                <span className="text-muted"> Attempted to train separate models per life-stage. Result: Too little data per stage, degraded accuracy.</span>
+                <strong>{t('deepdive.cmapss_discard_1_title')}</strong> 
+                <span className="text-muted"> {t('deepdive.cmapss_discard_1_desc')}</span>
               </li>
               <li>
-                <strong>tsfresh automated features:</strong>
-                <span className="text-muted"> Result: Massive feature explosion (1000+) causing severe overfitting. Reverted to domain-specific features.</span>
+                <strong>{t('deepdive.cmapss_discard_2_title')}</strong>
+                <span className="text-muted"> {t('deepdive.cmapss_discard_2_desc')}</span>
               </li>
             </ul>
           </div>
@@ -156,7 +247,7 @@ const DatasetDeepDivePage = ({ dataset }) => {
 
       {/* Honest Performance Panel */}
       <div className="panel performance-panel">
-        <span className="section-label text-accent">WHEN DOES THIS MODEL ACTUALLY BECOME RELIABLE?</span>
+        <span className="section-label text-accent">{t('deepdive.honest_perf_cmapss')}</span>
         <div className="performance-content">
           <div className="perf-chart">
             {/* Simple CSS graph for Recall vs Cutoff */}
@@ -188,12 +279,10 @@ const DatasetDeepDivePage = ({ dataset }) => {
           
           <div className="perf-text">
             <p>
-              The model's retrospective accuracy is high (94%), but genuine early-warning capability is weak. 
-              As shown in the graph (Recall vs. % of Average Lifespan), the model fails to reliably detect 
-              imminent failure (Recall ≈ 0) until the engine is past 60% of its typical service life.
+              {t('deepdive.cmapss_perf_text1')}
             </p>
             <p className="mt-1 text-accent" style={{fontWeight: 500}}>
-              Conclusion: Reliable for late-stage flagging, NOT for early prediction.
+              {t('deepdive.cmapss_perf_text2')}
             </p>
           </div>
         </div>

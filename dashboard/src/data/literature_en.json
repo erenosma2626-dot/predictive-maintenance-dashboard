@@ -1,0 +1,117 @@
+{
+  "articles": [
+    {
+      "id": 1,
+      "title": "Coble & Hines (2009) — Prognostic Parameter Selection (MTP Framework)",
+      "source": "Coble, J., & Hines, J. W. (2009). <em>Identifying Optimal Prognostic Parameters from Data: A Genetic Algorithms Approach.</em> Annual Conference of the PHM Society, 1(1). https://papers.phmsociety.org/index.php/phmconf/article/view/1404",
+      "proposes": "Proposes testing whether a sensor feature is worth using in RUL prediction via three metrics: <strong>Monotonicity</strong> (does the feature change in a consistent direction over time, or oscillate randomly?), <strong>Trendability</strong> (do curves in different units share the <strong>same shape</strong>?), and <strong>Prognosability</strong> (how close are the values of different units at the time of failure?).",
+      "takeaway": "This tripartite distinction clarifies two different questions often confused in PHM literature: <em>\"Is this feature meaningful within the unit itself?\"</em> vs. <em>\"Is this feature comparable across units?\"</em> A feature may show a perfect trend in one unit (high monotonicity) but behave completely differently in others (low trendability) — in this case, the feature can be <strong>a diagnosis tool specific to that unit</strong> but cannot be <strong>a generalizable RUL predictor</strong>. When doing feature selection in any project, one must separate the question \"in which unit does this work well\" from \"does this work well generally\"."
+    },
+    {
+      "id": 2,
+      "title": "Li et al. (2023) — RUL Estimation with Multi-Pattern Wiener Process",
+      "source": "",
+      "proposes": "Models degradation as a Wiener stochastic process with a constant drift parameter, and selects the drift pattern (among multiple candidates) that best fits the observed data using a DTW (Dynamic Time Warping) fitness score.",
+      "takeaway": "The Wiener process family (and stochastic process-based RUL models in general) relies on the assumption of a <strong>unidirectional and relatively regular degradation</strong>. When this assumption is violated (e.g., if the signal sometimes increases and sometimes decreases, or the degradation direction is inconsistent across units), all members of this family (including M1/M2/M3 variants) remain weak. This shows that before starting a project, explicitly testing the question <strong>\"is my signal really unidirectional?\"</strong> early on (with a simple monotonicity/direction-consistency check) saves time — otherwise, there's a risk of investing in such a model family only to later discover the core assumption is invalid."
+    },
+    {
+      "id": 3,
+      "title": "Küçükdağ et al. (2026) — RUL Estimation with Ridge-Regularized HMM",
+      "source": "Küçükdağ, H. B., Kirkil, G., & Hekimoğlu, M. (2026). <em>Robust HMM-Based Remaining Useful Life Estimation Using a Ridge-Regularized EM Algorithm.</em> Sensors, 26(4), 1321. https://doi.org/10.3390/s26041321",
+      "proposes": "In Hidden Markov Model (HMM)-based RUL estimation, particularly to stabilize parameter estimation in a <strong>small training fleet</strong> (like N=50), it uses ridge regularization and Huber-robust variance estimation; it calculates RUL as the expected transition time to the absorbing state.",
+      "takeaway": "This paper points to an important issue rarely discussed in PHM literature: <strong>standard (unregularized) statistical models are highly sensitive to parameter instability at small fleet sizes (e.g., n<100)</strong>. Regularization is not just a technique to \"prevent overfitting,\" but becomes a necessity in the small-n regime to prevent <strong>the model from swinging into completely meaningless states</strong>. Furthermore, the Huber-robust loss function automatically treating sudden/extreme sensor spikes as \"less reliable\" is a generally useful design principle when working with noisy industrial sensor data."
+    },
+    {
+      "id": 4,
+      "title": "Airao et al. (2026, Wear 600) — Tool RUL Estimation with Bayesian Neural Network",
+      "source": "Airao, J., Fattahi, S., Truong, T. T., Alinaghizadeh, A., Azarhoushang, B., Karras, P., & Aghababaei, R. (2026). <em>Data driven tool wear and remaining useful tool life estimation.</em> Wear, 600, 206808. https://doi.org/10.1016/j.wear.2026.206808 (open access: https://www.sciencedirect.com/science/article/pii/S004316482600298X)",
+      "proposes": "Claims to use a BNN for tool wear and RUL estimation, producing an <strong>uncertainty score</strong> in addition to the model's prediction.",
+      "takeaway": "(From critical reading) This paper is instructive in showing that \"uncertainty quantification\" claims in literature <strong>do not always rely on a true Bayesian posterior distribution</strong>. It was observed that the method used in the review is actually a <strong>post-hoc sensitivity analysis</strong> (slightly altering the input and seeing how much the output changes), not a true probabilistic uncertainty estimation. General lesson: When a paper claims \"uncertainty/confidence interval,\" it's crucial to distinguish whether it's <strong>truly a probabilistic inference</strong> or a <strong>proxy sensitivity measurement</strong> — the two offer very different guarantees; one is a calibrated probability distribution while the other is just a rough answer to \"how sensitive is this prediction\"."
+    },
+    {
+      "id": 5,
+      "title": "Wang, Yu, Siegel, Lee (2008) — Similarity-Based Prognostic Approach",
+      "source": "Wang, T., Yu, J., Siegel, D., & Lee, J. (2008). <em>A Similarity-Based Prognostics Approach for Remaining Useful Life Estimation of Engineered Systems.</em> 2008 International Conference on Prognostics and Health Management, 1-6. https://doi.org/10.1109/PHM.2008.4711421 (open access: https://www.academia.edu/14007977/)",
+      "proposes": "One of the foundational papers of the field, winner of the 2008 PHM Data Challenge — compares the early-period trajectory of a new unit with <strong>full-life trajectories</strong> observed in the past, and produces a weighted prediction based on the RUL of the most similar ones.",
+      "takeaway": "The core prerequisite of similarity-based approaches is that the <strong>historical trajectory library must be sufficiently rich and consistent</strong> — meaning this family indirectly relies on the assumption that \"past units are sufficiently similar to each other.\" This directly relates to the \"trendability\" concept in the MTP framework: in a dataset with low trendability (where units degrade in vastly different ways), similarity-based methods remain structurally disadvantaged — it may be impossible to find a \"similar\" past trajectory."
+    },
+    {
+      "id": 6,
+      "title": "Soons, Dijkman, Jilderda, Duivesteijn (2020) — TBSP and Bayesian Updating",
+      "source": "Soons, Y., Dijkman, R., Jilderda, S., & Duivesteijn, W. (2020). <em>Predicting Remaining Useful Life with Similarity-Based Priors.</em> In conference proceedings series (Springer). https://link.springer.com/chapter/10.1007/978-3-030-44584-3_38",
+      "proposes": "Trajectory-Based Similarity Prediction (TBSP) — combines a similarity-based prediction with a prediction that is <strong>updated in a Bayesian manner</strong> as new observations arrive.",
+      "takeaway": "The Bayesian updating layer is a theoretically elegant idea (increasing the reliability of the prediction over time as more data comes in) — but if the <strong>fundamental similarity assumption is weak</strong> (see item 5), adding a Bayesian layer on top cannot compensate for it; a \"smarter updating mechanism\" doesn't make a \"fundamentally weak signal\" strong. This is a general principle: a sophisticated layer (ensemble, Bayesian updating, etc.) added on top of a model only provides benefit if the underlying signal truly exists — if the signal isn't there, complexity only leads to being \"incorrect in a more complicated way.\""
+    },
+    {
+      "id": 7,
+      "title": "Li, Zheng, Xiang, Liu, Wan (2025) — Mode-Dependent RVM + Similarity Ensemble",
+      "source": "Li, N., Zheng, J., Xiang, D., Liu, Z., & Wan, Y. (2025). <em>Remaining useful life prediction with limited run-to-failure data: A Bayesian ensemble approach combining mode-dependent RVM and similarity.</em> https://www.sciencedirect.com/science/article/pii/S0019057824005342",
+      "proposes": "A method that can work with very little run-to-failure data (11-16 samples) — first divides units into \"modes\" (e.g., via K-means), and sets up a separate Relevance Vector Machine + similarity ensemble for each mode.",
+      "takeaway": "It's necessary to be aware that methods claiming \"can work with little data\" might actually be reducing it even further by <strong>dividing the data into subgroups</strong> (mode-dependent) — it might say \"works with n=16\" on paper, but in reality, n can remain much smaller within each sub-mode. When evaluating a method's claim of \"working with small data,\" it's important to check how much the method's <strong>internal modeling steps</strong> further partition the data."
+    },
+    {
+      "id": 8,
+      "title": "Yang, Ji, Li (2026) — Multi-Route Similarity Ensemble (PHME 2026)",
+      "source": "Yang, K.-L., Ji, D.-Y., & Li, Y.-H. (2026). <em>A Similarity-Based Ensemble Framework for Remaining Useful Life Prediction.</em> PHM Society European Conference. https://papers.phmsociety.org/index.php/phme/article/view/4986",
+      "proposes": "A recent approach that uses multiple \"routes\" (different combinations of similarity measures/models) and combines their predictions via an ensemble.",
+      "takeaway": "Ensemble approaches can mitigate the weakness of a single method <strong>when random noise is involved</strong>, but cannot resolve a <strong>systematic weakness</strong> (for example, if all routes rely on the same fundamental similarity assumption). General lesson: when building an ensemble, one must ensure the components possess <strong>independent failure modes</strong> — otherwise, the ensemble turns into a structure that \"repeats the same mistake N times,\" providing no real diversity."
+    },
+    {
+      "id": 9,
+      "title": "Li et al. (2026, Materials) — Physics-Based Current Baseline Model",
+      "source": "",
+      "proposes": "Calculates the \"expected current\" physically/analytically from the cutting geometry (material width, etc.) and uses the deviation (residual) of the actual current from this expected value as the wear signal.",
+      "takeaway": "Establishing a physics-based baseline (instead of a purely data-driven model) can be an effective way to strip <strong>operational variability</strong> (the natural current/power difference created by different cutting conditions) out of the model — using the \"deviation from expected\" instead of the raw signal is generally a robust technique that reduces noise. But the power of this approach depends on the <strong>accuracy of the physical model</strong> — if the model is too simple (e.g., with only one variable, material width), it may fail to capture actual operational complexity and inadvertently make the deviation signal itself noisy."
+    },
+    {
+      "id": 10,
+      "title": "ExxonMobil Research (2020) — Intelligent Maintenance Framework",
+      "source": "ExxonMobil Research and Engineering (2020). <em>Advancing from Predictive Maintenance to Intelligent Maintenance with AI and IIoT.</em> arXiv:2009.00351. https://arxiv.org/abs/2009.00351",
+      "proposes": "Expands the historical evolution of maintenance (reactive → preventive → predictive → prescriptive) with a fifth stage (\"Intelligent Maintenance\"): probabilistic machine learning, real-time IIoT networks, big data infrastructure, continuous model updating (with a CI/CD logic), and mobile/AR-supported decision-making in the field.",
+      "takeaway": "The most valuable aspect of this framework is that it positions predictive maintenance <strong>not as building a single model, but as a continuously updating system</strong>. In practice, this means: the success of a predictive maintenance project should be measured not by a one-time high model accuracy, but by the model's <strong>capacity to be recalibrated with new data over time</strong> — especially in projects starting with a small n (which is how most real industrial projects start), the perspective of \"today's model is weak but the system will grow stronger as it scales\" is more realistic and sustainable than the expectation that \"today's model must be perfect.\""
+    },
+    {
+      "id": 11,
+      "title": "Peng et al. (2025, MSSP) — RUL Prediction with Multi-Scale Time-Frequency Information",
+      "source": "Peng, C., Zheng, J., Chen, T., Shi, Y., Guo, L., Jing, Z., & Wang, Z. (2026). <em>A novel tool wear and remaining useful life prediction network based on multi-scale time–frequency information of milling force.</em> Mechanical Systems and Signal Processing, 244, 113763. https://doi.org/10.1016/j.ymssp.2025.113763",
+      "proposes": "Transforms the cutting force signal into the time-frequency domain via Synchrosqueezing Transform (SRT), performs a compression focusing on the spindle rotation frequency and its harmonics (Multi-Frequency Focusing), and then predicts RUL with a DenseNet+SE-based deep network.",
+      "takeaway": "This paper shows that <strong>raw time-domain statistics</strong> (mean, std, etc.) usually fail to distinguish different physical phenomena (e.g., different harmonic signatures of different fault types) in close frequency bands, but the <strong>right frequency-domain transform</strong> can achieve this. General lesson: failing in a statistic/representation where a signal appears \"weak\" doesn't mean the signal is truly absent — under the right transform (FFT, envelope analysis, wavelet, etc.), the same signal can emerge much more clearly. But one must remember that this transform is limited by <strong>data resolution</strong> (sampling frequency) — high-frequency physical phenomena may be fundamentally lost in low-resolution/downsampled data, and no transform can bring them back."
+    },
+    {
+      "id": 12,
+      "title": "Qiu, Lee, Lin, Yu (2006, JSV) — Wavelet Filter-Based Weak Signature Detection",
+      "source": "Qiu, H., Lee, J., Lin, J., & Yu, G. (2006). <em>Wavelet filter-based weak signature detection method and its application on rolling element bearing prognostics.</em> Journal of Sound and Vibration. https://doi.org/10.1016/j.jsv.2005.03.007 (open access: https://www.researchgate.net/publication/223556476)",
+      "proposes": "Compares two wavelet techniques (decomposition-based vs. filter-based) to isolate early/weak vibration signatures of bearing faults from noise, and shows the filter-based approach is more reliable for impulsive mechanical signals.",
+      "takeaway": "This paper shows that the question of \"which signal processing technique is right\" <strong>depends on the physical character of the signal</strong> — one technique (decomposition) is suitable for smoothly/gradually changing signals, another (filter) for impulsive/sudden signals. General lesson: when choosing a signal processing method, it's important to select the technique that \"matches the nature of the physical phenomenon being sought\" rather than \"what is popular in literature\" — since bearing faults are generally impulsive, filter-based approaches deserve different treatment than systems showing smooth/gradual degradation (e.g., chemical wear)."
+    },
+    {
+      "id": 13,
+      "title": "Damage Propagation Modeling Notebook (Kaggle, Open Source) — Expected Value Framework",
+      "source": "Ayrıca dayandığı orijinal veri seti kaynağı: Saxena, A., Goebel, K., Simon, D., & Eklund, N. (2008). <em>Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation.</em> International Conference on Prognostics and Health Management (PHM08).",
+      "proposes": "Combines RUL regression with a cost-benefit matrix taken from the \"Data Science for Business\" book, expressing model performance directly in dollars; also uses an <strong>asymmetric score function</strong> (which penalizes late predictions more heavily than early predictions).",
+      "takeaway": "This is one of the most important steps in practice, yet unseen in most academic papers — whether a RUL model is \"good\" should be evaluated not by statistical metrics like R²/RMSE, but by the <strong>cost structure in the real decision scenario</strong>. Even if two models have the same R², they can be vastly different in terms of business value if one makes \"few but very expensive errors\" while the other makes \"many but cheap errors.\" Also, asymmetric scoring (heavily penalizing late prediction) reflects an asymmetry already inherent in real maintenance decisions (missed fault > unnecessary maintenance) — symmetric metrics like RMSE completely miss this asymmetry."
+    }
+  ],
+  "synthesis": [
+    {
+      "bold": "Retrospective power does not imply prospective (early warning) power.",
+      "text": "Almost every paper/experiment yields strong results when tested with full-life/late-stage data, but weak results with early-stage data — this seems to be a structural feature of the field, not a quirk specific to a single dataset."
+    },
+    {
+      "bold": "Small n places a fundamental limit, regardless of model complexity.",
+      "text": "Regularization, ensembles, Bayesian layers — none of them fully solve the small sample problem, they can only partially mitigate its impact."
+    },
+    {
+      "bold": "The right signal processing transform can reveal a signal thought to be \"absent\"",
+      "text": "— but it cannot surpass the physical limits set by data resolution/quality."
+    },
+    {
+      "bold": "A model's success should be measured by the cost structure in the real decision scenario rather than statistical metrics",
+      "text": "— expected-value frameworks make visible what academic metrics cannot see."
+    },
+    {
+      "bold": "Method selection should be based on the physical/statistical character of the signal",
+      "text": "(is it monotonic or not, impulsive or smooth, high or low trendability) — rather than directly applying a \"popular/new\" method, testing whether the data meets the method's assumptions first saves time."
+    }
+  ]
+}

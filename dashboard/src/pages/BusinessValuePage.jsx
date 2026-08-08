@@ -1,15 +1,17 @@
 import React from 'react';
 import './BusinessValuePage.css';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const BusinessValuePage = ({ dataset }) => {
+  const { t } = useLanguage();
   if (dataset === 'bearing') {
     return (
       <div className="bv-page fade-in">
         <div className="panel placeholder-panel">
           <div className="placeholder-content">
-            <span className="section-label" style={{textAlign: 'center', display: 'block', marginBottom: '1rem'}}>BUSINESS VALUE MODELING — COMING SOON</span>
+            <span className="section-label" style={{textAlign: 'center', display: 'block', marginBottom: '1rem'}}>{t('business.coming_soon')}</span>
             <p className="placeholder-text">
-              The expected-value framework used for the Turbofan dataset has not yet been calibrated for Bearing data. Switch to Turbofan to see the full analysis.
+              {t('business.placeholder_text')}
             </p>
           </div>
         </div>
@@ -20,7 +22,7 @@ const BusinessValuePage = ({ dataset }) => {
   return (
     <div className="bv-page fade-in">
       <div className="panel chart-panel">
-        <span className="section-label">EXPECTED VALUE GENERATED (VS REACTIVE BASELINE)</span>
+        <span className="section-label">{t('business.expected_value')}</span>
         
         <div className="bar-chart-container">
           <div className="chart-bars">
@@ -29,7 +31,7 @@ const BusinessValuePage = ({ dataset }) => {
               <div className="bar reactive" style={{ height: '5%' }}>
                 <span className="bar-label">$0</span>
               </div>
-              <span className="bar-title">REACTIVE</span>
+              <span className="bar-title">{t('business.reactive')}</span>
             </div>
             
             {/* Preventive */}
@@ -37,7 +39,7 @@ const BusinessValuePage = ({ dataset }) => {
               <div className="bar preventive" style={{ height: '75%' }}>
                 <span className="bar-label">+$1.66M</span>
               </div>
-              <span className="bar-title">PREVENTIVE</span>
+              <span className="bar-title">{t('business.preventive')}</span>
             </div>
 
             {/* Model */}
@@ -45,32 +47,32 @@ const BusinessValuePage = ({ dataset }) => {
               <div className="bar model" style={{ height: '90%' }}>
                 <span className="bar-label text-accent">+$1.94M</span>
               </div>
-              <span className="bar-title text-accent">MODEL</span>
+              <span className="bar-title text-accent">{t('business.model')}</span>
             </div>
           </div>
         </div>
 
         <div className="sensitivity-note">
-          Ranking robust across FN cost -$40K to -$150K
+          {t('business.sensitivity')}
         </div>
       </div>
 
       <div className="panel methodology-panel">
-        <span className="section-label">METHODOLOGY & SOURCING</span>
+        <span className="section-label">{t('business.methodology')}</span>
         <div className="methodology-content">
           <p>
-            The values above are derived using an expected value framework based on the following illustrative placeholder costs:
+            {t('business.meth_desc')}
           </p>
           <ul>
-            <li>True Positive (TP) Benefit: <strong>$50,000</strong> (Saved secondary damage minus intervention cost)</li>
-            <li>False Positive (FP) Cost: <strong>-$5,000</strong> (Wasted inspection/early maintenance)</li>
-            <li>False Negative (FN) Cost: <strong>-$80,000</strong> (Run-to-failure catastrophic damage)</li>
-            <li>True Negative (TN) Value: <strong>$0</strong></li>
+            <li dangerouslySetInnerHTML={{ __html: t('business.tp_cost') }}></li>
+            <li dangerouslySetInnerHTML={{ __html: t('business.fp_cost') }}></li>
+            <li dangerouslySetInnerHTML={{ __html: t('business.fn_cost') }}></li>
+            <li dangerouslySetInnerHTML={{ __html: t('business.tn_cost') }}></li>
           </ul>
           <p className="mt-1">
-            <strong>Sources:</strong><br/>
-            1. Cost-benefit methodology inspired by the "Damage Propagation Modeling" Kaggle notebook and "Data Science for Business".<br/>
-            2. Performance figures are extracted from the official C-MAPSS FD001 test split evaluations as detailed in the project notebook.
+            <strong>{t('business.sources')}</strong><br/>
+            {t('business.source_1')}<br/>
+            {t('business.source_2')}
           </p>
         </div>
       </div>

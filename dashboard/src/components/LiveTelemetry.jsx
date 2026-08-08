@@ -1,7 +1,9 @@
 import React from 'react';
 import './LiveTelemetry.css';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const LiveTelemetry = ({ data, history, dataset }) => {
+  const { t } = useLanguage();
   // SVG drawing logic for the oscilloscope feel
   const width = 600;
   const height = 200;
@@ -22,13 +24,13 @@ const LiveTelemetry = ({ data, history, dataset }) => {
 
   return (
     <div className="panel telemetry-panel">
-      <span className="section-label">LIVE TELEMETRY STREAM</span>
+      <span className="section-label">{t('live.dashboard_title')}</span>
       
       <div className="telemetry-meta">
-        <span>SRC: SYN-{data.engine_source_unit}</span>
-        <span>RATE: 1Hz</span>
-        <span>CYC: {data.cycle}/{data.engine_total_lifespan}</span>
-        <span>SENS: {sensorKey}</span>
+        <span>{t('live.src')} SYN-{data.engine_source_unit}</span>
+        <span>{t('live.rate')} 1Hz</span>
+        <span>{t('live.cyc')} {data.cycle}/{data.engine_total_lifespan}</span>
+        <span>{t('live.sens')} {sensorKey}</span>
       </div>
 
       <div className="telemetry-chart-container">

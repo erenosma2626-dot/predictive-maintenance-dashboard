@@ -1,0 +1,574 @@
+{
+  "nav": {
+    "live": {
+      "en": "LIVE",
+      "tr": "CANLI"
+    },
+    "synthetic": {
+      "en": "SYNTHETIC DATA",
+      "tr": "SENTETİK VERİ"
+    },
+    "deepdive": {
+      "en": "DATASET DEEP-DIVE",
+      "tr": "VERİSETİ ANALİZİ"
+    },
+    "resources": {
+      "en": "RESOURCES",
+      "tr": "KAYNAKLAR"
+    },
+    "business": {
+      "en": "BUSINESS VALUE",
+      "tr": "İŞ DEĞERİ"
+    },
+    "jet_engine": {
+      "en": "Jet Engine",
+      "tr": "Jet Motoru"
+    },
+    "bearing": {
+      "en": "Rolling Bearing",
+      "tr": "Rulman"
+    }
+  },
+  "live": {
+    "dashboard_title": {
+      "en": "LIVE DATA STREAM",
+      "tr": "CANLI VERİ AKIŞI"
+    },
+    "status": {
+      "en": "STATUS",
+      "tr": "DURUM"
+    },
+    "healthy": {
+      "en": "HEALTHY",
+      "tr": "SAĞLIKLI"
+    },
+    "degraded": {
+      "en": "DEGRADED",
+      "tr": "BOZULMUŞ"
+    },
+    "critical": {
+      "en": "CRITICAL",
+      "tr": "KRİTİK"
+    },
+    "unit_id": {
+      "en": "UNIT ID:",
+      "tr": "ÜNİTE NO:"
+    },
+    "dataset": {
+      "en": "DATASET:",
+      "tr": "VERİSETİ:"
+    },
+    "cycle": {
+      "en": "CYCLE:",
+      "tr": "DÖNGÜ:"
+    },
+    "src": {
+      "en": "SRC:",
+      "tr": "KAYNAK:"
+    },
+    "rate": {
+      "en": "RATE:",
+      "tr": "HIZ:"
+    },
+    "cyc": {
+      "en": "CYC:",
+      "tr": "DÖN:"
+    },
+    "sens": {
+      "en": "SENS:",
+      "tr": "SENS:"
+    },
+    "history": {
+      "en": "PREDICTION HISTORY",
+      "tr": "TAHMİN GEÇMİŞİ"
+    },
+    "risk_prob": {
+      "en": "Risk Probability (%)",
+      "tr": "Risk Olasılığı (%)"
+    },
+    "maintenance_alert": {
+      "en": "MAINTENANCE ALERT",
+      "tr": "BAKIM UYARISI"
+    },
+    "maintenance_desc": {
+      "en": "Risk threshold exceeded. Maintenance required.",
+      "tr": "Risk eşiği aşıldı. Bakım gerekli."
+    },
+    "system_risk": {
+      "en": "SYSTEM RISK LEVEL",
+      "tr": "SİSTEM RİSK SEVİYESİ"
+    },
+    "conf_high": {
+      "en": "CONFIDENCE: HIGH",
+      "tr": "GÜVEN: YÜKSEK"
+    },
+    "conf_low": {
+      "en": "CONFIDENCE: LOW (early-stage, unvalidated)",
+      "tr": "GÜVEN: DÜŞÜK (erken-aşama, doğrulanmamış)"
+    },
+    "risk_critical": {
+      "en": "RISK: CRITICAL",
+      "tr": "RİSK: KRİTİK"
+    },
+    "risk_nominal": {
+      "en": "RISK: NOMINAL",
+      "tr": "RİSK: NOMİNAL"
+    },
+    "model_reliability": {
+      "en": "MODEL RELIABILITY: VARIES BY UNIT — SEE DEEP-DIVE",
+      "tr": "MODEL GÜVENİLİRLİĞİ: ÜNİTEYE GÖRE DEĞİŞİR — ANALİZE BAKIN"
+    },
+    "accuracy": {
+      "en": "ACCURACY",
+      "tr": "DOĞRULUK"
+    },
+    "precision": {
+      "en": "PRECISION",
+      "tr": "KESİNLİK"
+    },
+    "recall": {
+      "en": "RECALL",
+      "tr": "DUYARLILIK"
+    },
+    "f1_score": {
+      "en": "F1 SCORE",
+      "tr": "F1 SKORU"
+    },
+    "model_limitations": {
+      "en": "MODEL LIMITATIONS & WARNING",
+      "tr": "MODEL SINIRLAMALARI VE UYARI"
+    },
+    "bearing_warning": {
+      "en": "This model generates a high rate of false signals in practice. Due to the limited sample size (n=12) and varying reliability across units, a consistently accurate threshold has not yet been established.",
+      "tr": "Bu model pratikte yüksek oranda yanlış sinyal üretir. Sınırlı örneklem boyutu (n=12) ve üniteler arasındaki değişen güvenilirlik nedeniyle, henüz tutarlı bir doğru eşik belirlenememiştir."
+    },
+    "alert_message": {
+      "en": "ALERT MESSAGE",
+      "tr": "UYARI MESAJI"
+    },
+    "1st_factor": {
+      "en": "1st FACTOR",
+      "tr": "1. FAKTÖR"
+    },
+    "2nd_factor": {
+      "en": "2nd FACTOR",
+      "tr": "2. FAKTÖR"
+    }
+  },
+  "resources": {
+    "synthesis_title": {
+      "en": "GENERAL SYNTHESIS: COMMON THEMES",
+      "tr": "GENEL SENTEZ: ORTAK TEMALAR"
+    },
+    "proposes": {
+      "en": "WHAT IT PROPOSES",
+      "tr": "NE ÖNERİYOR?"
+    },
+    "takeaway": {
+      "en": "GENERAL TAKEAWAY",
+      "tr": "GENEL ÇIKARIM"
+    }
+  },
+  "synthetic": {
+    "title": {
+      "en": "SYNTHETIC DATA SIMULATION",
+      "tr": "SENTETİK VERİ SİMÜLASYONU"
+    },
+    "about": {
+      "en": "About the Mock Implementation",
+      "tr": "Mock Implementasyonu Hakkında"
+    },
+    "about_desc_1": {
+      "en": "You are currently viewing a simulated data stream based on the NASA IMS Bearing dataset. In a real-world production environment, this dashboard would connect to a real-time MQTT broker or WebSocket stream receiving live vibration data from actual physical bearings.",
+      "tr": "Şu anda NASA IMS Bearing verisetine dayalı simüle edilmiş bir veri akışı izliyorsunuz. Gerçek bir endüstriyel ortamda, bu dashboard doğrudan gerçek rulmanlardan titreşim verisi alan canlı bir MQTT veya WebSocket akışına bağlanırdı."
+    },
+    "about_desc_2": {
+      "en": "The machine learning model deployed behind this is a Random Forest model trained on the original IMS run-to-failure experiments. It predicts the probability of bearing failure within the next few hours based on extracted time-domain features (like RMS and Kurtosis).",
+      "tr": "Arka planda çalışan makine öğrenmesi modeli, orijinal IMS 'run-to-failure' deneyleriyle eğitilmiş bir Random Forest modelidir. Çıkarılan zaman-domeni özelliklerine (RMS ve Kurtosis gibi) dayanarak rulmanın birkaç saat içinde arızalanma olasılığını tahmin eder."
+    },
+    "generation_method": {
+      "en": "GENERATION METHOD",
+      "tr": "ÜRETİM YÖNTEMİ"
+    },
+    "synth_desc": {
+      "en": "Each of the 12 real bearings' recorded lifetime was resampled onto a common 0–100% life-percentage axis, then averaged into a single \"prototype\" curve (with its natural spread preserved as a ± band). The live stream is this average curve plus randomized noise scaled to that natural spread — not a copy of any single real bearing, and not pure randomness either.",
+      "tr": "12 gerçek rulmanın kaydedilen ömrü, ortak bir %0-100 ömür eksenine yeniden örneklendi ve ardından (doğal yayılımı ± bandı olarak korunarak) tek bir 'prototip' eğrisine ortalaması alındı. Canlı akış, bu ortalama eğriye o doğal yayılıma göre ölçeklenmiş rastgele gürültü eklenmiş halidir — ne tek bir rulmanın kopyasıdır, ne de tamamen rastgele bir veridir."
+    },
+    "why_trust": {
+      "en": "WHY TRUST THIS STREAM?",
+      "tr": "BU AKIŞA NEDEN GÜVENMELİ?"
+    },
+    "trust_1": {
+      "en": "Built from real, physical bearing failures — not invented from scratch",
+      "tr": "Sıfırdan uydurulmamış, gerçek, fiziksel rulman arızalarından inşa edilmiştir"
+    },
+    "trust_2": {
+      "en": "Preserves the natural bearing-to-bearing variability (the +/- band), so the stream doesn't look artificially \"too clean\"",
+      "tr": "Doğal rulmandan-rulmana değişkenliği (+/- bandı) korur, böylece akış yapay bir şekilde 'fazla temiz' görünmez"
+    },
+    "trust_3": {
+      "en": "Every tick is scored by the same model validated in the Dataset Deep-Dive page — the risk logic you see live is the same logic that was tested against real held-out bearings",
+      "tr": "Her an, Dataset Deep-Dive sayfasında doğrulanan aynı model tarafından puanlanır — canlı olarak gördüğünüz risk mantığı, ayrılmış gerçek rulmanlar üzerinde test edilen mantıkla aynıdır"
+    },
+    "live_comparison": {
+      "en": "LIVE COMPARISON: SYNTHETIC VS. REAL ENVELOPE",
+      "tr": "CANLI KARŞILAŞTIRMA: SENTETİK VS. GERÇEK ZARF"
+    },
+    "vib_intensity": {
+      "en": "VIBRATION INTENSITY (RMS)",
+      "tr": "TİTREŞİM ŞİDDETİ (RMS)"
+    },
+    "impact_sharpness": {
+      "en": "IMPACT SHARPNESS (KURTOSIS)",
+      "tr": "DARBE KESKİNLİĞİ (KURTOSIS)"
+    },
+    "life_0": {
+      "en": "0% Life",
+      "tr": "%0 Ömür"
+    },
+    "life_50": {
+      "en": "50% Life",
+      "tr": "%50 Ömür"
+    },
+    "life_100": {
+      "en": "100% Life",
+      "tr": "%100 Ömür"
+    },
+    "what_for": {
+      "en": "WHAT THIS STREAM IS FOR:",
+      "tr": "BU AKIŞ NE İÇİNDİR:"
+    },
+    "what_for_desc": {
+      "en": " demonstrating the live risk-scoring pipeline end to end, and stress-testing how the model behaves across a full lifecycle.",
+      "tr": " canlı risk puanlama veri hattını (pipeline) uçtan uca göstermek ve modelin tam bir yaşam döngüsü boyunca nasıl davrandığını stres-testine sokmak."
+    },
+    "what_not": {
+      "en": "WHAT IT IS NOT:",
+      "tr": "NE DEĞİLDİR:"
+    },
+    "what_not_desc": {
+      "en": " a substitute for the per-bearing validation shown in the Dataset Deep-Dive page. Real bearings vary — some show a clean early-quiet / late-alarm pattern, others don't (see the 12-bearing grid).",
+      "tr": " Dataset Deep-Dive sayfasında gösterilen rulman başına doğrulamanın yerini tutmaz. Gerçek rulmanlar değişir — bazıları temiz bir 'erken-sessiz / geç-uyarı' deseni gösterirken, bazıları göstermez (12'li rulman ızgarasına bakın)."
+    }
+  },
+  "business": {
+    "title": {
+      "en": "BUSINESS VALUE PROPOSITION",
+      "tr": "İŞ DEĞERİ ÖNERİSİ"
+    },
+    "cost": {
+      "en": "Cost of Unexpected Failure",
+      "tr": "Beklenmedik Arıza Maliyeti"
+    },
+    "cost_desc": {
+      "en": "Every hour of unexpected downtime in a heavy industrial setting can cost tens of thousands of dollars in lost production, damaged secondary equipment, and emergency repair logistics.",
+      "tr": "Ağır sanayide beklenmedik bir duruşun her saati, kaybedilen üretim, hasar gören ikincil ekipmanlar ve acil onarım lojistiği nedeniyle on binlerce dolara mal olabilir."
+    },
+    "solution": {
+      "en": "The Predictive Solution",
+      "tr": "Kestirimci Çözüm"
+    },
+    "solution_desc": {
+      "en": "By deploying an early warning system, maintenance can be scheduled during planned downtime. The model doesn't just predict failure; it provides a probabilistic risk score, allowing operations managers to balance risk against production schedules.",
+      "tr": "Bir erken uyarı sistemi kurarak, bakımlar planlı duruş sürelerine denk getirilebilir. Model sadece arızayı tahmin etmez; operasyon yöneticilerinin riski üretim takvimiyle dengelemesini sağlayan olasılıksal bir risk skoru sunar."
+    },
+    "roi": {
+      "en": "Return on Investment (ROI)",
+      "tr": "Yatırım Getirisi (ROI)"
+    },
+    "roi_desc": {
+      "en": "Implementing this dashboard on a fleet of critical assets typically yields a positive ROI within the first 6-12 months by preventing just a single catastrophic failure event.",
+      "tr": "Bu panonun kritik varlık filosuna entegre edilmesi, tek bir felaket senaryosunu (büyük arızayı) önleyerek genelde ilk 6-12 ay içinde pozitif bir yatırım getirisi (ROI) sağlar."
+    },
+    "coming_soon": {
+      "en": "BUSINESS VALUE MODELING — COMING SOON",
+      "tr": "İŞ DEĞERİ MODELLEMESİ — ÇOK YAKINDA"
+    },
+    "placeholder_text": {
+      "en": "The expected-value framework used for the Turbofan dataset has not yet been calibrated for Bearing data. Switch to Turbofan to see the full analysis.",
+      "tr": "Turbofan veriseti için kullanılan beklenen-değer çerçevesi henüz Rulman verisi için kalibre edilmedi. Tam analizi görmek için Turbofan motoruna geçin."
+    },
+    "expected_value": {
+      "en": "EXPECTED VALUE GENERATED (VS REACTIVE BASELINE)",
+      "tr": "ÜRETİLEN BEKLENEN DEĞER (REAKTİF TEMELE GÖRE)"
+    },
+    "reactive": {
+      "en": "REACTIVE",
+      "tr": "REAKTİF"
+    },
+    "preventive": {
+      "en": "PREVENTIVE",
+      "tr": "KORUYUCU"
+    },
+    "model": {
+      "en": "MODEL",
+      "tr": "MODEL"
+    },
+    "sensitivity": {
+      "en": "Ranking robust across FN cost -$40K to -$150K",
+      "tr": "-$40K ile -$150K arası FN maliyetlerinde sıralama tutarlıdır"
+    },
+    "methodology": {
+      "en": "METHODOLOGY & SOURCING",
+      "tr": "METODOLOJİ VE KAYNAKLAR"
+    },
+    "meth_desc": {
+      "en": "The values above are derived using an expected value framework based on the following illustrative placeholder costs:",
+      "tr": "Yukarıdaki değerler, aşağıdaki temsilî yer tutucu maliyetlere dayanan bir beklenen değer çerçevesi kullanılarak türetilmiştir:"
+    },
+    "tp_cost": {
+      "en": "True Positive (TP) Benefit: <strong>$50,000</strong> (Saved secondary damage minus intervention cost)",
+      "tr": "Doğru Pozitif (TP) Faydası: <strong>$50.000</strong> (Önlenen ikincil hasar eksi müdahale maliyeti)"
+    },
+    "fp_cost": {
+      "en": "False Positive (FP) Cost: <strong>-$5,000</strong> (Wasted inspection/early maintenance)",
+      "tr": "Yanlış Pozitif (FP) Maliyeti: <strong>-$5.000</strong> (Boşa giden muayene/erken bakım)"
+    },
+    "fn_cost": {
+      "en": "False Negative (FN) Cost: <strong>-$80,000</strong> (Run-to-failure catastrophic damage)",
+      "tr": "Yanlış Negatif (FN) Maliyeti: <strong>-$80.000</strong> (Arızaya kadar çalışma sonucu felaket boyutunda hasar)"
+    },
+    "tn_cost": {
+      "en": "True Negative (TN) Value: <strong>$0</strong>",
+      "tr": "Doğru Negatif (TN) Değeri: <strong>$0</strong>"
+    },
+    "sources": {
+      "en": "Sources:",
+      "tr": "Kaynaklar:"
+    },
+    "source_1": {
+      "en": "1. Cost-benefit methodology inspired by the \"Damage Propagation Modeling\" Kaggle notebook and \"Data Science for Business\".",
+      "tr": "1. Maliyet-fayda metodolojisi, \"Damage Propagation Modeling\" Kaggle not defterinden ve \"Data Science for Business\" kitabından esinlenmiştir."
+    },
+    "source_2": {
+      "en": "2. Performance figures are extracted from the official C-MAPSS FD001 test split evaluations as detailed in the project notebook.",
+      "tr": "2. Performans verileri, proje not defterinde detaylandırıldığı gibi resmi C-MAPSS FD001 test ayırması değerlendirmelerinden çıkarılmıştır."
+    }
+  },
+  "deepdive": {
+    "cmapss_title": {
+      "en": "C-MAPSS DATASET DEEP-DIVE",
+      "tr": "C-MAPSS VERİSETİ ANALİZİ"
+    },
+    "cmapss_desc": {
+      "en": "The Commercial Modular Aero-Propulsion System Simulation (C-MAPSS) dataset is a standard benchmark for predictive maintenance.",
+      "tr": "C-MAPSS (Commercial Modular Aero-Propulsion System Simulation) veriseti, kestirimci bakım alanındaki en önemli standart test verilerinden biridir."
+    },
+    "sensor_title": {
+      "en": "SENSOR TRAJECTORIES",
+      "tr": "SENSÖR YÖRÜNGELERİ"
+    },
+    "sensor_desc": {
+      "en": "Different sensors show distinct degradation patterns. For example, Sensor 2 (T24) often shows an exponential rise near failure.",
+      "tr": "Farklı sensörler farklı bozulma örüntüleri gösterir. Örneğin, Sensör 2 (T24) arızaya yaklaştıkça üstel bir artış sergiler."
+    },
+    "model_title": {
+      "en": "MODEL PERFORMANCE",
+      "tr": "MODEL PERFORMANSI"
+    },
+    "model_desc": {
+      "en": "The Random Forest classifier achieves high accuracy by learning the non-linear interactions between these 21 sensor readings over time.",
+      "tr": "Random Forest sınıflandırıcısı, bu 21 sensör okuması arasındaki doğrusal olmayan ilişkileri zaman içinde öğrenerek yüksek doğruluk elde eder."
+    },
+    "bearing_title": {
+      "en": "IMS BEARING DATASET DEEP-DIVE",
+      "tr": "IMS BEARING VERİSETİ ANALİZİ"
+    },
+    "bearing_subtitle": {
+      "en": "HONEST PERFORMANCE ACROSS 12 UNITS",
+      "tr": "12 ÜNİTE ÜZERİNDE DÜRÜST PERFORMANS"
+    },
+    "bearing_desc_1": {
+      "en": "In academic literature, it's common to report a single \"95% accuracy\" metric. However, real-world mechanical degradation is highly variable.",
+      "tr": "Akademik literatürde tek bir \"%95 doğruluk\" metriği raporlamak yaygındır. Ancak gerçek dünyadaki mekanik bozulma çok değişkendir."
+    },
+    "bearing_desc_2": {
+      "en": "Averaging this away into a single score hides the reality of the model's inconsistency across physical units.",
+      "tr": "Bunu tek bir puana indirgeyerek ortalamasını almak, modelin fiziksel üniteler arasındaki tutarsızlık gerçeğini gizler."
+    },
+    "bearing_enlarge": {
+      "en": "Click to enlarge",
+      "tr": "Büyütmek için tıkla"
+    },
+    "turbofan_desc_2": {
+      "en": "Below are random samples from the test set demonstrating the model's ability to distinguish healthy states from degraded states across different physical units.",
+      "tr": "Aşağıda, modelin farklı fiziksel ünitelerde sağlıklı ve bozulmuş durumları ayırt etme yeteneğini gösteren test setinden rastgele örnekler yer almaktadır."
+    },
+    "bearing_desc_3": {
+      "en": "The NASA IMS dataset consists of 4 bearings run to failure. Our cross-validation test isolates individual bearings to see if a model trained on some can generalize to others. The results show significant variance:",
+      "tr": "NASA IMS veriseti arızaya kadar çalıştırılan 4 rulmandan (toplam 12) oluşur. Çapraz-doğrulama testimiz, bazılarında eğitilen bir modelin diğerlerinde genellenip genellenemeyeceğini görmek için rulmanları tek tek izole eder. Sonuçlar önemli varyanslar gösteriyor:"
+    },
+    "bearing_list_1": {
+      "en": "Some units show clean exponential degradation (easy to predict).",
+      "tr": "Bazı üniteler temiz üstel bozulma gösterir (tahmini kolaydır)."
+    },
+    "bearing_list_2": {
+      "en": "Others fail suddenly with no early warning.",
+      "tr": "Diğerleri erken uyarı olmaksızın aniden arızalanır."
+    },
+    "bearing_list_3": {
+      "en": "Some show early spikes that resolve naturally, causing false alarms.",
+      "tr": "Bazıları doğal olarak düzelen erken sıçramalar gösterir ve yanlış alarmlara neden olur."
+    },
+    "bearing_click": {
+      "en": "Click on any unit to see detailed signal vs. prediction tracking.",
+      "tr": "Detaylı sinyal ve tahmin takibini görmek için herhangi bir üniteye tıklayın."
+    },
+    "model_prediction": {
+      "en": "Model Prediction (Risk %)",
+      "tr": "Model Tahmini (Risk %)"
+    },
+    "sensor_signal": {
+      "en": "Sensor Signal (RMS)",
+      "tr": "Sensör Sinyali (RMS)"
+    },
+    "unit": {
+      "en": "UNIT",
+      "tr": "ÜNİTE"
+    },
+    "dataset_identity": {
+      "en": "DATASET IDENTITY",
+      "tr": "VERİSETİ KİMLİĞİ"
+    },
+    "feature_engineering": {
+      "en": "FEATURE ENGINEERING",
+      "tr": "ÖZELLİK MÜHENDİSLİĞİ"
+    },
+    "model_specs": {
+      "en": "MODEL SPECIFICATIONS",
+      "tr": "MODEL ÖZELLİKLERİ"
+    },
+    "discarded": {
+      "en": "DISCARDED APPROACHES",
+      "tr": "ELENEN YAKLAŞIMLAR"
+    },
+    "honest_perf_bearing": {
+      "en": "HONEST PERFORMANCE: RELIABILITY VARIES BY UNIT",
+      "tr": "DÜRÜST PERFORMANS: GÜVENİLİRLİK ÜNİTEYE GÖRE DEĞİŞİR"
+    },
+    "honest_perf_cmapss": {
+      "en": "WHEN DOES THIS MODEL ACTUALLY BECOME RELIABLE?",
+      "tr": "BU MODEL GERÇEKTE NE ZAMAN GÜVENİLİR OLUR?"
+    },
+    "bearing_perf_text1": {
+      "en": "Reliability varies by bearing — roughly half show a clean quiet-early/sharp-late-alarm pattern; the rest are noisier throughout their recorded life.",
+      "tr": "Güvenilirlik rulmana göre değişir - yaklaşık yarısı temiz bir erken-sessiz / geç-uyarı paterni gösterir; geri kalanı kaydedilen ömürleri boyunca daha gürültülüdür."
+    },
+    "bearing_perf_text2": {
+      "en": "Averaging this away into a single score hides the reality of the model's inconsistency across physical units.",
+      "tr": "Bunu tek bir puana indirgeyerek ortalamasını almak, modelin fiziksel üniteler arasındaki tutarsızlık gerçeğini gizler."
+    },
+    "cmapss_perf_text1": {
+      "en": "The model's retrospective accuracy is high (94%), but genuine early-warning capability is weak. As shown in the graph (Recall vs. % of Average Lifespan), the model fails to reliably detect imminent failure (Recall ≈ 0) until the engine is past 60% of its typical service life.",
+      "tr": "Modelin geriye dönük doğruluğu yüksektir (%94), ancak gerçek erken uyarı yeteneği zayıftır. Grafikte (Duyarlılık vs. Ortalama Ömür Yüzdesi) gösterildiği gibi, motor tipik hizmet ömrünün %60'ını geçene kadar model yaklaşan arızayı güvenilir bir şekilde tespit edemez (Duyarlılık ≈ 0)."
+    },
+    "cmapss_perf_text2": {
+      "en": "Conclusion: Reliable for late-stage flagging, NOT for early prediction.",
+      "tr": "Sonuç: Geç aşama uyarısı için güvenilir, erken tahmin için DEĞİL."
+    },
+    "name": {
+      "en": "Name:",
+      "tr": "İsim:"
+    },
+    "source": {
+      "en": "Source:",
+      "tr": "Kaynak:"
+    },
+    "train_set": {
+      "en": "Training Set:",
+      "tr": "Eğitim Seti:"
+    },
+    "test_set": {
+      "en": "Test Set:",
+      "tr": "Test Seti:"
+    },
+    "condition": {
+      "en": "Condition:",
+      "tr": "Durum:"
+    },
+    "fault_mode": {
+      "en": "Fault Mode:",
+      "tr": "Arıza Modu:"
+    },
+    "sensors": {
+      "en": "Sensors:",
+      "tr": "Sensörler:"
+    },
+    "details": {
+      "en": "Details:",
+      "tr": "Detaylar:"
+    },
+    "units": {
+      "en": "Units:",
+      "tr": "Üniteler:"
+    },
+    "specs": {
+      "en": "Specs:",
+      "tr": "Özellikler:"
+    },
+    "algorithm": {
+      "en": "Algorithm:",
+      "tr": "Algoritma:"
+    },
+    "validation": {
+      "en": "Validation:",
+      "tr": "Doğrulama:"
+    },
+    "note": {
+      "en": "Note:",
+      "tr": "Not:"
+    },
+    "leakage": {
+      "en": "Leakage Audit:",
+      "tr": "Sızıntı Denetimi:"
+    },
+    "bearing_grid_click": {
+      "en": "Bearing",
+      "tr": "Rulman"
+    },
+    "bearing_grid_reliability": {
+      "en": "Reliability",
+      "tr": "Güvenilirlik"
+    },
+    "bearing_discard_1_title": {
+      "en": "GMM-HMM:",
+      "tr": "GMM-HMM:"
+    },
+    "bearing_discard_1_desc": {
+      "en": "Automatic transition detection. Inconsistent across bearings.",
+      "tr": "Otomatik geçiş tespiti. Rulmanlar arası tutarsız."
+    },
+    "bearing_discard_2_title": {
+      "en": "3-tier health-state:",
+      "tr": "3-kademeli sağlık-durumu:"
+    },
+    "bearing_discard_2_desc": {
+      "en": "Worse performance than simple binary classification.",
+      "tr": "Basit ikili sınıflandırmadan daha kötü performans."
+    },
+    "bearing_discard_3_title": {
+      "en": "Continuous RUL regression:",
+      "tr": "Sürekli RUL regresyonu:"
+    },
+    "bearing_discard_3_desc": {
+      "en": "Highly unreliable, R² negative in most folds.",
+      "tr": "Son derece güvenilmez, çoğu katmanda R² negatif."
+    },
+    "cmapss_discard_1_title": {
+      "en": "Stage-matched classification:",
+      "tr": "Aşamaya-özel sınıflandırma:"
+    },
+    "cmapss_discard_1_desc": {
+      "en": "Attempted to train separate models per life-stage. Result: Too little data per stage, degraded accuracy.",
+      "tr": "Her yaşam aşaması için ayrı modeller eğitmeye çalışıldı. Sonuç: Aşama başına çok az veri, düşen doğruluk."
+    },
+    "cmapss_discard_2_title": {
+      "en": "tsfresh automated features:",
+      "tr": "tsfresh otomatik özellikleri:"
+    },
+    "cmapss_discard_2_desc": {
+      "en": "Result: Massive feature explosion (1000+) causing severe overfitting. Reverted to domain-specific features.",
+      "tr": "Sonuç: Aşırı öğrenmeye neden olan devasa özellik patlaması (1000+). Alana özgü özelliklere geri dönüldü."
+    }
+  }
+}

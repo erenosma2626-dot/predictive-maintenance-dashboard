@@ -1,8 +1,10 @@
 import React from 'react';
 import bearingTemplates from '../data/bearing_templates.json';
 import './SyntheticDataPage.css';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const ChartPanel = ({ featureKey, title, maxVal, history }) => {
+  const { t } = useLanguage();
   const width = 800;
   const height = 150;
 
@@ -55,15 +57,16 @@ const ChartPanel = ({ featureKey, title, maxVal, history }) => {
       </div>
       {/* X-axis labels */}
       <div className="x-axis">
-        <span>0% Life</span>
-        <span>50% Life</span>
-        <span>100% Life</span>
+        <span>{t('synthetic.life_0')}</span>
+        <span>{t('synthetic.life_50')}</span>
+        <span>{t('synthetic.life_100')}</span>
       </div>
     </div>
   );
 };
 
 const SyntheticDataPage = ({ dataset, currentData, history }) => {
+  const { t } = useLanguage();
   if (dataset !== 'bearing') return null;
 
   return (
@@ -71,43 +74,39 @@ const SyntheticDataPage = ({ dataset, currentData, history }) => {
       
       {/* Section 1 - How it's built */}
       <div className="panel synth-section">
-        <span className="section-label">GENERATION METHOD</span>
+        <span className="section-label">{t('synthetic.generation_method')}</span>
         <div className="synth-content">
           <p className="synth-desc">
-            Each of the 12 real bearings' recorded lifetime was resampled onto a common 
-            0–100% life-percentage axis, then averaged into a single "prototype" curve 
-            (with its natural spread preserved as a ± band). The live stream is this 
-            average curve plus randomized noise scaled to that natural spread — not a 
-            copy of any single real bearing, and not pure randomness either.
+            {t('synthetic.synth_desc')}
           </p>
         </div>
       </div>
 
       {/* Section 2 - Why it's a reasonable stand-in */}
       <div className="panel synth-section">
-        <span className="section-label">WHY TRUST THIS STREAM?</span>
+        <span className="section-label">{t('synthetic.why_trust')}</span>
         <div className="synth-content">
           <ul className="checklist">
-            <li>Built from real, physical bearing failures — not invented from scratch</li>
-            <li>Preserves the natural bearing-to-bearing variability (the +/- band), so the stream doesn't look artificially "too clean"</li>
-            <li>Every tick is scored by the same model validated in the Dataset Deep-Dive page — the risk logic you see live is the same logic that was tested against real held-out bearings</li>
+            <li>{t('synthetic.trust_1')}</li>
+            <li>{t('synthetic.trust_2')}</li>
+            <li>{t('synthetic.trust_3')}</li>
           </ul>
         </div>
       </div>
 
       {/* Section 3 - Live comparison (Centerpiece) */}
       <div className="panel synth-section comparison-panel">
-        <span className="section-label text-accent">LIVE COMPARISON: SYNTHETIC VS. REAL ENVELOPE</span>
+        <span className="section-label text-accent">{t('synthetic.live_comparison')}</span>
         <div className="synth-content charts-container">
           <ChartPanel 
             featureKey="rms_rm_norm" 
-            title="VIBRATION INTENSITY (RMS)" 
+            title={t('synthetic.vib_intensity')} 
             maxVal={4} 
             history={history} 
           />
           <ChartPanel 
             featureKey="kurtosis_rm_norm" 
-            title="IMPACT SHARPNESS (KURTOSIS)" 
+            title={t('synthetic.impact_sharpness')} 
             maxVal={6} 
             history={history} 
           />
@@ -118,10 +117,10 @@ const SyntheticDataPage = ({ dataset, currentData, history }) => {
       <div className="panel synth-section synth-footer">
         <div className="synth-content">
           <p>
-            <strong>WHAT THIS STREAM IS FOR:</strong> demonstrating the live risk-scoring pipeline end to end, and stress-testing how the model behaves across a full lifecycle.
+            <strong>{t('synthetic.what_for')}</strong>{t('synthetic.what_for_desc')}
           </p>
           <p className="mt-1">
-            <strong>WHAT IT IS NOT:</strong> a substitute for the per-bearing validation shown in the Dataset Deep-Dive page. Real bearings vary — some show a clean early-quiet / late-alarm pattern, others don't (see the 12-bearing grid).
+            <strong>{t('synthetic.what_not')}</strong>{t('synthetic.what_not_desc')}
           </p>
         </div>
       </div>

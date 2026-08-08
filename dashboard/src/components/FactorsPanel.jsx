@@ -1,5 +1,6 @@
 import React from 'react';
 import './FactorsPanel.css';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const SENSOR_NAMES = {
   "s_1": "Total Temp Fan Inlet",
@@ -46,31 +47,33 @@ const formatFeatureName = (featureCode) => {
 };
 
 const FactorsPanel = ({ data, isAlert, dataset }) => {
+  const { t } = useLanguage();
+
   if (dataset === 'bearing') {
     return (
       <div className="panel factors-panel bearing-factors">
         <div className="bearing-metrics-grid">
           <div className="metric-box">
-            <span className="metric-label">ACCURACY</span>
+            <span className="metric-label">{t('live.accuracy')}</span>
             <span className="metric-value">0.797</span>
           </div>
           <div className="metric-box">
-            <span className="metric-label">PRECISION</span>
+            <span className="metric-label">{t('live.precision')}</span>
             <span className="metric-value">0.144</span>
           </div>
           <div className="metric-box">
-            <span className="metric-label">RECALL</span>
+            <span className="metric-label">{t('live.recall')}</span>
             <span className="metric-value">0.611</span>
           </div>
           <div className="metric-box">
-            <span className="metric-label">F1 SCORE</span>
+            <span className="metric-label">{t('live.f1_score')}</span>
             <span className="metric-value">0.233</span>
           </div>
         </div>
         <div className="bearing-explanation-box">
-          <span className="section-label">MODEL LIMITATIONS & WARNING</span>
+          <span className="section-label">{t('live.model_limitations')}</span>
           <p className="explanation-text">
-            This model generates a high rate of false signals in practice. Due to the limited sample size (n=12) and varying reliability across units, a consistently accurate threshold has not yet been established. 
+            {t('live.bearing_warning')}
           </p>
         </div>
       </div>
@@ -82,7 +85,7 @@ const FactorsPanel = ({ data, isAlert, dataset }) => {
   if (isAlert) {
     return (
       <div className="panel factors-panel alert-state">
-        <span className="section-label text-accent">ALERT MESSAGE</span>
+        <span className="section-label text-accent">{t('live.alert_message')}</span>
         <div className="alert-message">
           {message.split('\n').map((line, i) => (
             <React.Fragment key={i}>
@@ -99,14 +102,14 @@ const FactorsPanel = ({ data, isAlert, dataset }) => {
     <div className="panel factors-panel default-state">
       <div className="factors-grid">
         <div className="factor-cell">
-          <span className="section-label">1st FACTOR</span>
+          <span className="section-label">{t('live.1st_factor')}</span>
           <div className="factor-content" style={{fontSize: '0.85rem'}}>
             {formatFeatureName(top_features[0]?.feature)} 
             <span className="factor-dir">{top_features[0]?.shap_value > 0 ? '↑' : '↓'}</span>
           </div>
         </div>
         <div className="factor-cell">
-          <span className="section-label">2nd FACTOR</span>
+          <span className="section-label">{t('live.2nd_factor')}</span>
           <div className="factor-content" style={{fontSize: '0.85rem'}}>
             {formatFeatureName(top_features[1]?.feature)}
             <span className="factor-dir">{top_features[1]?.shap_value > 0 ? '↑' : '↓'}</span>

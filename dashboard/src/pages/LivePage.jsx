@@ -7,9 +7,12 @@ import RiskIndicator from '../components/RiskIndicator';
 import FactorsPanel from '../components/FactorsPanel';
 import LogPanel from '../components/LogPanel';
 import EngineModel from '../components/EngineModel';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const LivePage = ({ dataset, currentData, history, logs, isAlert }) => {
-  if (!currentData) return <div className="loading">Initializing Telemetry...</div>;
+  const { t } = useLanguage();
+
+  if (!currentData) return <div className="loading">{t('live.initializing', 'Initializing Telemetry...')}</div>;
 
   return (
     <div className="live-page">
