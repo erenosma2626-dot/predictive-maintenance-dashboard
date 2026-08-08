@@ -175,5 +175,7 @@ evaluation.
 ## Roadmap
 
 - [x] Additional datasets (bearing degradation) under the same validation discipline, selectable via a dataset-switcher UI, complete with dedicated Synthetic Data visualizations and dynamic 3D digital twins.
+- [x] Full i18n (English/Turkish) localization with a live context-based language switcher.
+- [x] Literature Resources page compiling generalized lessons from academic sources.
 - [ ] Additional datasets (milling tool wear).
 - [ ] Sequence-aware modeling (LSTM/GRU) to test whether the early-warning ceiling is a model-class limitation rather than a feature limitation.
