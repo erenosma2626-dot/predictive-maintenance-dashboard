@@ -8,6 +8,10 @@
       "en": "SYNTHETIC DATA",
       "tr": "SENTETİK VERİ"
     },
+    "fleet_simulation": {
+      "en": "FLEET SIMULATION",
+      "tr": "FİLO SİMÜLASYONU"
+    },
     "deepdive": {
       "en": "DATASET DEEP-DIVE",
       "tr": "VERİSETİ ANALİZİ"
@@ -569,6 +573,80 @@
     "cmapss_discard_2_desc": {
       "en": "Result: Massive feature explosion (1000+) causing severe overfitting. Reverted to domain-specific features.",
       "tr": "Sonuç: Aşırı öğrenmeye neden olan devasa özellik patlaması (1000+). Alana özgü özelliklere geri dönüldü."
+    }
+  },
+  "fleet": {
+    "overview": {
+      "en": "Fleet Overview",
+      "tr": "Filo Genel Bakış"
+    },
+    "diagnosis": {
+      "en": "Diagnosis & 3D",
+      "tr": "Teşhis ve 3D"
+    },
+    "priority_queue": {
+      "en": "Priority Queue",
+      "tr": "Öncelik Sırası"
+    },
+    "monthly_reports": {
+      "en": "Monthly Reports",
+      "tr": "Aylık Raporlar"
+    },
+    "crew_roster": {
+      "en": "Crew Roster",
+      "tr": "Ekip Listesi"
+    },
+    "agents": {
+      "en": "AGENTS",
+      "tr": "AJANLAR"
+    },
+    "fleet.about": {
+      "en": "About this page",
+      "tr": "Bu sayfa hakkında"
+    },
+    "HPC_Degradation": {
+      "en": "HPC Degradation",
+      "tr": "Yüksek Basınçlı Kompresör (HPC) Bozulumu"
+    },
+    "LPT_Degradation": {
+      "en": "LPT Degradation",
+      "tr": "Düşük Basınçlı Türbin (LPT) Bozulumu"
+    },
+    "Fan_Degradation": {
+      "en": "Fan Degradation",
+      "tr": "Fan Bozulumu"
+    },
+    "healthy": {
+      "en": "Healthy",
+      "tr": "Sağlıklı"
+    },
+    "at_risk": {
+      "en": "At Risk",
+      "tr": "Riskli"
+    },
+    "no_reports": {
+      "en": "No reports generated yet.",
+      "tr": "Henüz rapor oluşturulmadı."
+    },
+    "month": {
+      "en": "Month",
+      "tr": "Ay"
+    },
+    "net": {
+      "en": "Net:",
+      "tr": "Net:"
+    },
+    "available": {
+      "en": "AVAILABLE",
+      "tr": "MÜSAİT"
+    },
+    "repairing": {
+      "en": "repairing",
+      "tr": "tamirde"
+    },
+    "ticks_left": {
+      "en": "ticks left",
+      "tr": "tick kaldı"
     }
   }
 }

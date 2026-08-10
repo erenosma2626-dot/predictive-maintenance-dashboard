@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import './EngineModel.css';
 
 // The actual 3D model component
-const EngineObject = ({ isAlert, maintenanceProbability, dataset }) => {
+export const EngineObject = ({ isAlert, maintenanceProbability, dataset }) => {
   const modelPath = dataset === 'bearing' ? '/rolling-bearing.glb' : '/jet-engine.glb';
   const baseY = dataset === 'bearing' ? -0.2 : -1.5; // Bearing is naturally smaller/centered differently
   const { scene, nodes } = useGLTF(modelPath);

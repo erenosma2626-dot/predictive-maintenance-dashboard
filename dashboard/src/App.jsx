@@ -5,6 +5,7 @@ import BusinessValuePage from './pages/BusinessValuePage';
 import DatasetDeepDivePage from './pages/DatasetDeepDivePage';
 import SyntheticDataPage from './pages/SyntheticDataPage';
 import ResourcesPage from './pages/ResourcesPage';
+import FleetSimulationPage from './pages/FleetSimulationPage';
 import { useLiveStream } from './hooks/useLiveStream';
 import { LanguageProvider } from './contexts/LanguageContext';
 import './App.css';
@@ -29,6 +30,7 @@ function App() {
           {activeTab === 'LIVE' && <LivePage dataset={dataset} currentData={currentData} history={history} logs={logs} isAlert={isAlert} />}
           {activeTab === 'BUSINESS VALUE' && <BusinessValuePage dataset={dataset} />}
           {activeTab === 'SYNTHETIC DATA' && <SyntheticDataPage dataset={dataset} currentData={currentData} history={history} />}
+          {activeTab === 'FLEET SIMULATION' && <FleetSimulationPage dataset={dataset} />}
           {activeTab === 'DATASET DEEP-DIVE' && <DatasetDeepDivePage dataset={dataset} />}
           {activeTab === 'RESOURCES' && <ResourcesPage />}
         </main>

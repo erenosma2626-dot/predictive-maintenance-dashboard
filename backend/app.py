@@ -62,7 +62,7 @@ except Exception as e:
     print(f"Could not load real generator dependencies: {e}")
     REAL_GENERATOR_AVAILABLE = False
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")

@@ -6,13 +6,14 @@ const Navigation = ({ activeTab, setActiveTab, dataset, setDataset }) => {
   const { language, toggleLanguage, t } = useLanguage();
 
   const baseTabs = dataset === 'bearing' 
-    ? ['live', 'synthetic', 'deepdive', 'resources']
-    : ['live', 'business', 'deepdive', 'resources'];
+    ? ['live', 'synthetic', 'fleet_simulation', 'deepdive', 'resources']
+    : ['live', 'business', 'fleet_simulation', 'deepdive', 'resources'];
 
   const tabMapping = {
     'live': 'LIVE',
     'synthetic': 'SYNTHETIC DATA',
     'business': 'BUSINESS VALUE',
+    'fleet_simulation': 'FLEET SIMULATION',
     'deepdive': 'DATASET DEEP-DIVE',
     'resources': 'RESOURCES'
   };
