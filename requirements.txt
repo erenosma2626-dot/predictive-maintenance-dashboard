@@ -9,3 +9,4 @@ fastapi
 uvicorn[standard]
 supabase
 python-dotenv
+azure-ai-inference

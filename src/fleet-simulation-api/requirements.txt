@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+supabase
+python-dotenv
+azure-ai-inference
+pandas
+numpy
+scikit-learn
