@@ -11,7 +11,8 @@ export function Box4MonthlyReports({ dataset = 'bearing' }) {
   const handleTriggerReport = async () => {
     setIsGenerating(true)
     try {
-      await fetch(`http://127.0.0.1:8001/trigger-monthly-report?dataset_type=${dataset}`, {
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001'
+      await fetch(`${baseUrl}/trigger-monthly-report?dataset_type=${dataset}`, {
         method: 'POST'
       })
     } catch (e) {
