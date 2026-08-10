@@ -23,40 +23,37 @@ export default function FleetSimulationPage({ dataset }) {
   }
 
   return (
-    <FleetSimulationProvider dataset={dataset}>
-      <div className="fleet-simulation-container">
-        {isLoading && <SimulationLoadingScreen onComplete={handleComplete} />}
-        <ApprovalManager />
-        <FleetSimulationAboutPanel dataset={dataset} />
-        
-        <div className="fleet-grid">
-          <div className="grid-area-overview panel-box">
-            <Box1FleetOverview />
-          </div>
-          <div className="grid-area-diagnosis panel-box">
-            <Box2Diagnosis dataset={dataset} />
-          </div>
-          <div className="grid-area-priority panel-box">
-            <Box3PriorityQueue />
-          </div>
-          
-          {/* Right Column */}
-          <div style={{ gridColumn: 3, gridRow: '1 / 3', display: 'flex', flexDirection: 'column', gap: '15px', minHeight: 0 }}>
-            <div className="panel-box" style={{ flex: '0.9', minHeight: 0 }}>
-              <Box4MonthlyReports dataset={dataset} />
-            </div>
-            
-            <ApprovalManager />
-            
-            <div className="panel-box" style={{ flex: '1.1', minHeight: 0 }}>
-              <Box5CrewRoster />
-            </div>
-          </div>
+    <div className="fleet-simulation-container">
+      {isLoading && <SimulationLoadingScreen onComplete={handleComplete} />}
+      <FleetSimulationAboutPanel dataset={dataset} />
+      
+      <div className="fleet-grid">
+        <div className="grid-area-overview panel-box">
+          <Box1FleetOverview />
+        </div>
+        <div className="grid-area-diagnosis panel-box">
+          <Box2Diagnosis dataset={dataset} />
+        </div>
+        <div className="grid-area-priority panel-box">
+          <Box3PriorityQueue />
         </div>
         
-        {/* Agent Status Bar at the bottom */}
-        <AgentsStatusOverlay />
+        {/* Right Column */}
+        <div style={{ gridColumn: 3, gridRow: '1 / 3', display: 'flex', flexDirection: 'column', gap: '15px', minHeight: 0 }}>
+          <div className="panel-box" style={{ flex: '0.9', minHeight: 0 }}>
+            <Box4MonthlyReports dataset={dataset} />
+          </div>
+          
+          <ApprovalManager />
+          
+          <div className="panel-box" style={{ flex: '0.9', minHeight: 0 }}>
+            <Box5CrewRoster dataset={dataset} />
+          </div>
+        </div>
       </div>
-    </FleetSimulationProvider>
+
+      <AgentsStatusOverlay dataset={dataset} />
+      <SimulationClock dataset={dataset} />
+    </div>
   )
 }

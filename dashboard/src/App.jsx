@@ -8,6 +8,7 @@ import ResourcesPage from './pages/ResourcesPage';
 import FleetSimulationPage from './pages/FleetSimulationPage';
 import { useLiveStream } from './hooks/useLiveStream';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { FleetSimulationProvider } from './contexts/FleetSimulationContext';
 import './App.css';
 
 function App() {
@@ -18,13 +19,14 @@ function App() {
 
   return (
     <LanguageProvider>
-      <div className="app-container">
-        <Navigation 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
-          dataset={dataset} 
-          setDataset={setDataset} 
-        />
+      <FleetSimulationProvider dataset={dataset}>
+        <div className="app-container">
+          <Navigation 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            dataset={dataset} 
+            setDataset={setDataset} 
+          />
         
         <main className="main-content">
           {activeTab === 'LIVE' && <LivePage dataset={dataset} currentData={currentData} history={history} logs={logs} isAlert={isAlert} />}
@@ -35,6 +37,7 @@ function App() {
           {activeTab === 'RESOURCES' && <ResourcesPage />}
         </main>
       </div>
+      </FleetSimulationProvider>
     </LanguageProvider>
   );
 }
