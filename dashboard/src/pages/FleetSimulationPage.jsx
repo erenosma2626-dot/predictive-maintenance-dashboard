@@ -9,12 +9,24 @@ import { AgentsStatusOverlay } from '../components/FleetSimulation/AgentsStatusO
 import { SimulationClock } from '../components/FleetSimulation/SimulationClock'
 import { FleetSimulationAboutPanel } from '../components/FleetSimulation/FleetSimulationAboutPanel'
 import { ApprovalManager } from '../components/FleetSimulation/ApprovalManager'
+import { SimulationLoadingScreen } from '../components/FleetSimulation/SimulationLoadingScreen'
 import './FleetSimulationPage.css'
 
 export default function FleetSimulationPage({ dataset }) {
+  const [isLoading, setIsLoading] = React.useState(() => {
+    return !sessionStorage.getItem('fleetSimLoaded')
+  })
+
+  const handleComplete = () => {
+    sessionStorage.setItem('fleetSimLoaded', 'true')
+    setIsLoading(false)
+  }
+
   return (
     <FleetSimulationProvider dataset={dataset}>
       <div className="fleet-simulation-container">
+        {isLoading && <SimulationLoadingScreen onComplete={handleComplete} />}
+        <ApprovalManager />
         <FleetSimulationAboutPanel dataset={dataset} />
         
         <div className="fleet-grid">

@@ -122,7 +122,21 @@ def tick_machine(state):
 def tick_all_machines(dataset_type):
     results = []
     for machine_id, state in machines_state[dataset_type].items():
-        result = tick_machine(state)
+        if machine_id in _active_repairs[dataset_type]:
+            # Keep reporting it as at_risk while it's being repaired
+            result = {
+                "id": state["id"],
+                "dataset_type": dataset_type,
+                "display_name": state["id"],
+                "status": "at_risk",
+                "risk_probability": 0.99,
+                "life_pct": float(state["life_pct"]),
+                "fault_type": state["fault_type"],
+                "top_shap_feature": None,
+            }
+        else:
+            result = tick_machine(state)
+            
         try:
             supabase.table("machines").upsert(result).execute()
         except Exception as e:
@@ -178,7 +192,7 @@ def monitoring_node_lg(state: SimulationState) -> SimulationState:
                 dataset_type=dataset_type,
             )
             print(f"[monitoring] {machine_id} flagged as at_risk")
-        elif not is_at_risk and machine_id in _already_flagged[dataset_type]:
+        elif not is_at_risk and machine_id in _already_flagged[dataset_type] and result["life_pct"] < 5.0:
             _already_flagged[dataset_type].discard(machine_id)
 
     set_agent_status("monitoring", "idle", dataset_type=dataset_type)
@@ -223,7 +237,6 @@ def free_crew(crew_id: str, dataset_type: str):
 def planning_node_lg(state: SimulationState) -> SimulationState:
     dataset_type = state["dataset_type"]
     set_agent_status("planning", "working", dataset_type=dataset_type)
-    print(f"[DEBUG] human_approval_enabled = {is_human_approval_enabled()}")
     for result in state["tick_results"]:
         machine_id = result["id"]
         is_at_risk = result["status"] == "at_risk"
@@ -557,15 +570,34 @@ async def simulation_loop(dataset_type: str):
     loop_count = 0
     while True:
         try:
-            tick_results = tick_all_machines(dataset_type)
-            initial_state: SimulationState = {
-                "tick_results": tick_results,
-                "current_machine_id": None,
-                "dataset_type": dataset_type,
-            }
             config = {"configurable": {"thread_id": dataset_type}}
-            result = await simulation_graph.ainvoke(initial_state, config=config)
+            state = simulation_graph.get_state(config)
+            is_paused = False
+            if state.next:
+                for task in state.tasks:
+                    if task.interrupts:
+                        is_paused = True
+                        break
             
+            if is_paused and not is_human_approval_enabled():
+                # User disabled approval while a dispatch was pending. Auto-resume it!
+                from langgraph.types import Command
+                await simulation_graph.ainvoke(Command(resume={"approved": True}), config=config)
+                is_paused = False # Resume successful, we can invoke normally now
+            
+            # ALWAYS tick machines (time passes)
+            tick_results = tick_all_machines(dataset_type)
+            
+            # Only run agents if they are not waiting for user
+            if not is_paused:
+                initial_state: SimulationState = {
+                    "tick_results": tick_results,
+                    "current_machine_id": None,
+                    "dataset_type": dataset_type,
+                }
+                await simulation_graph.ainvoke(initial_state, config=config)
+            
+            # ALWAYS increment time and generate reports
             loop_count += 1
             if loop_count >= 30:
                 asyncio.create_task(reporting_node(dataset_type))
