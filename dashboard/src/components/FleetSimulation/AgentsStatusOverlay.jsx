@@ -15,13 +15,13 @@ export function AgentsStatusOverlay() {
 
   return (
     <div style={{
-      position: 'absolute',
-      bottom: '20px',
-      left: '50%',
-      transform: 'translateX(-50%)',
       display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: '5px auto 0 auto',
+      width: 'fit-content',
       gap: '15px',
-      zIndex: 1000,
+      zIndex: 10,
       background: 'rgba(15, 15, 18, 0.9)',
       padding: '10px 20px',
       borderRadius: '8px',

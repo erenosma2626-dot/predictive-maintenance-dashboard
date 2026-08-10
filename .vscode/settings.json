@@ -1,0 +1,6 @@
+{
+    "python.defaultInterpreterPath": "/Users/erenosma/miniconda3/bin/python",
+    "python.analysis.extraPaths": [
+        "/Users/erenosma/miniconda3/lib/python3.13/site-packages"
+    ]
+}

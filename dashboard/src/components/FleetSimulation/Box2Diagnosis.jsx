@@ -17,7 +17,8 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
 
   const relevantEvent = useMemo(() => {
     if (!selectedMachine) return null
-    return events.find(e => e.machine_id === selectedMachine.id && e.event_type === 'diagnosis_complete')
+    return events.find(e => e.machine_id === selectedMachine.id && 
+      (e.event_type === 'diagnosis_complete' || e.event_type === 'escalation_diagnosis_complete'))
   }, [events, selectedMachine])
 
   const diagAgent = agentStatus.find(a => a.agent_name === 'diagnosis')
@@ -77,8 +78,11 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
               Diagnosis Agent is analyzing...
             </div>
           ) : relevantEvent ? (
-            <div style={{ color: '#ddd', fontSize: '14px', lineHeight: '1.4' }}>
+            <div style={{ color: relevantEvent.event_type === 'escalation_diagnosis_complete' ? '#ffaa00' : '#ddd', fontSize: '14px', lineHeight: '1.4' }}>
               <span style={{ color: '#88aa00', fontWeight: 'bold', marginRight: '5px' }}>Agent:</span>
+              {relevantEvent.event_type === 'escalation_diagnosis_complete' && (
+                <span style={{ color: '#ff4444', fontWeight: 'bold', marginRight: '5px' }}>[ESCALATED]</span>
+              )}
               {relevantEvent.message}
             </div>
           ) : (

@@ -233,6 +233,17 @@ export function FleetSimulationAboutPanel({ dataset = 'bearing' }) {
           AI for the parts that genuinely benefit from natural-language synthesis.
         </div>
       </div>
+      <div>
+        <div style={{ color: '#ffaa00', marginBottom: '5px', marginTop: '20px' }}>ABOUT ESCALATION & APPROVAL</div>
+        <div style={{ marginTop: '10px' }}>
+          If {dataset === 'cmapss' ? 'an engine' : 'a machine'} is flagged as at-risk multiple times recently, it's routed to
+          a separate "escalation" diagnosis that explicitly flags it as a likely
+          persistent issue rather than a one-off. Optionally, you can require human
+          approval before any repair crew is dispatched (toggle above) - when
+          enabled, the system pauses and waits for a decision instead of dispatching
+          automatically.
+        </div>
+      </div>
     </div>
   )
 }

@@ -11,7 +11,20 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 from azure.ai.inference import ChatCompletionsClient
 from azure.core.credentials import AzureKeyCredential
+from typing import TypedDict, Optional
+from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import interrupt
 
+
+
+
+
+class SimulationState(TypedDict):
+    tick_results: list[dict]      # o anki tick'in tüm makine sonuçları
+    current_machine_id: Optional[str]   # o an işlenen tek makine (node'lar arası akış için)
+    dataset_type: str
+    
 # ---- Config ----
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -77,9 +90,8 @@ def tick_machine(state):
     
     fault_types = FAULT_TYPES_BEARING if dataset == "bearing" else FAULT_TYPES_CMAPSS
     
-    if state["life_pct"] >= 100:
-        state["life_pct"] = 0.0
-        state["fault_type"] = rng.choice(fault_types)
+    if state["life_pct"] >= 99.9:
+        state["life_pct"] = 99.9
 
     if dataset == "bearing":
         if bearing_model is not None:
@@ -148,9 +160,11 @@ def log_event(machine_id: str, event_type: str, message: str, dataset_type: str,
     except Exception as e:
         print(f"[log_event] {dataset_type} failed for {machine_id}: {e}")
 
-def monitoring_node(tick_results: list[dict], dataset_type: str):
-    set_agent_status("monitoring", "working", dataset_type)
-    for result in tick_results:
+def monitoring_node_lg(state: SimulationState) -> SimulationState:
+    dataset_type = state["dataset_type"]
+    set_agent_status("monitoring", "working", dataset_type=dataset_type)
+
+    for result in state["tick_results"]:
         machine_id = result["id"]
         is_at_risk = result["status"] == "at_risk"
 
@@ -160,15 +174,15 @@ def monitoring_node(tick_results: list[dict], dataset_type: str):
                 machine_id=machine_id,
                 event_type="risk_detected",
                 message=f"{machine_id} crossed risk threshold (p={result['risk_probability']:.2f})",
-                dataset_type=dataset_type,
                 agent_name="monitoring",
+                dataset_type=dataset_type,
             )
-            print(f"[monitoring] {dataset_type} {machine_id} flagged as at_risk")
-
+            print(f"[monitoring] {machine_id} flagged as at_risk")
         elif not is_at_risk and machine_id in _already_flagged[dataset_type]:
             _already_flagged[dataset_type].discard(machine_id)
 
-    set_agent_status("monitoring", "idle", dataset_type)
+    set_agent_status("monitoring", "idle", dataset_type=dataset_type)
+    return state
 
 # ---- Stage 4: Planning Node ----
 REPAIR_DURATION_TICKS = 5
@@ -206,28 +220,44 @@ def free_crew(crew_id: str, dataset_type: str):
     except Exception as e:
         print(f"[free_crew] {dataset_type} failed: {e}")
 
-def planning_node(tick_results: list[dict], dataset_type: str):
-    set_agent_status("planning", "working", dataset_type)
-
-    for result in tick_results:
+def planning_node_lg(state: SimulationState) -> SimulationState:
+    dataset_type = state["dataset_type"]
+    set_agent_status("planning", "working", dataset_type=dataset_type)
+    print(f"[DEBUG] human_approval_enabled = {is_human_approval_enabled()}")
+    for result in state["tick_results"]:
         machine_id = result["id"]
         is_at_risk = result["status"] == "at_risk"
-
         already_being_repaired = machine_id in _active_repairs[dataset_type]
+
         if is_at_risk and not already_being_repaired:
             crew = get_available_crew(dataset_type)
             if crew:
+                # --- YENİ: onay gerekiyorsa dur ---
+                if is_human_approval_enabled():
+                    approval = interrupt({
+                        "action": "dispatch_crew",
+                        "machine_id": machine_id,
+                        "crew_id": crew["id"],
+                        "dataset_type": dataset_type,
+                    })
+                    if not approval.get("approved", False):
+                        log_event(machine_id, "dispatch_rejected",
+                                  f"Dispatch of {crew['id']} to {machine_id} was rejected",
+                                  agent_name="planning", dataset_type=dataset_type)
+                        continue  # bu makineyi atla, ekip atama
+
                 dispatch_crew(crew["id"], machine_id, dataset_type)
                 log_event(machine_id, "crew_dispatched",
-                          f"{crew['id']} dispatched to {machine_id}", dataset_type, agent_name="planning")
-                print(f"[planning] {dataset_type} {crew['id']} -> {machine_id}")
+                          f"{crew['id']} dispatched to {machine_id}",
+                          agent_name="planning", dataset_type=dataset_type)
+                print(f"[planning] {crew['id']} -> {machine_id}")
             else:
                 log_event(machine_id, "queued_no_crew",
-                          f"{machine_id} at risk but no crew available", dataset_type, agent_name="planning")
-                print(f"[planning] {dataset_type} {machine_id} queued")
+                          f"{machine_id} at risk but no crew available",
+                          agent_name="planning", dataset_type=dataset_type)
 
     completed = []
-    for machine_id, repair in _active_repairs[dataset_type].items():
+    for machine_id, repair in list(_active_repairs[dataset_type].items()):
         repair["ticks_remaining"] -= 1
         if repair["ticks_remaining"] <= 0:
             completed.append(machine_id)
@@ -235,13 +265,20 @@ def planning_node(tick_results: list[dict], dataset_type: str):
     for machine_id in completed:
         crew_id = _active_repairs[dataset_type][machine_id]["crew_id"]
         free_crew(crew_id, dataset_type)
+        
+        # Repair complete, reset machine life
+        if machine_id in machines_state[dataset_type]:
+            machines_state[dataset_type][machine_id]["life_pct"] = 0.0
+            fault_types = FAULT_TYPES_BEARING if dataset_type == "bearing" else FAULT_TYPES_CMAPSS
+            machines_state[dataset_type][machine_id]["fault_type"] = rng.choice(fault_types)
+            
         log_event(machine_id, "repair_complete",
-                  f"{crew_id} completed repair on {machine_id}", dataset_type, agent_name="planning")
-        print(f"[planning] {dataset_type} repair complete: {machine_id}")
+                  f"{crew_id} completed repair on {machine_id}", agent_name="planning", dataset_type=dataset_type)
+        print(f"[planning] repair complete: {machine_id}")
         del _active_repairs[dataset_type][machine_id]
         _already_flagged[dataset_type].discard(machine_id)
-
-    set_agent_status("planning", "idle", dataset_type)
+    set_agent_status("planning", "idle", dataset_type=dataset_type)
+    return state
 
 
 # ---- Stage 5: Diagnosis Node ----
@@ -300,18 +337,93 @@ async def generate_diagnosis_text_async(machine_id: str, risk_probability: float
     set_agent_status("diagnosis", "idle", dataset_type)
 
 
-def diagnosis_node(tick_results: list[dict], dataset_type: str):
-    for result in tick_results:
+async def diagnosis_node_lg(state: SimulationState) -> SimulationState:
+    dataset_type = state["dataset_type"]
+
+    for result in state["tick_results"]:
         machine_id = result["id"]
         is_at_risk = result["status"] == "at_risk"
 
         if is_at_risk and machine_id not in _already_diagnosed[dataset_type]:
             _already_diagnosed[dataset_type].add(machine_id)
-            asyncio.create_task(
-                generate_diagnosis_text_async(machine_id, result["risk_probability"], result["fault_type"], dataset_type)
+            await generate_diagnosis_text_async(
+                machine_id, result["risk_probability"], result["fault_type"], dataset_type
             )
         elif not is_at_risk and machine_id in _already_diagnosed[dataset_type]:
             _already_diagnosed[dataset_type].discard(machine_id)
+
+    return state
+
+def is_recurring_issue(machine_id: str, dataset_type: str, lookback: int = 20, threshold: int = 2) -> bool:
+    """Son `lookback` event içinde, bu makine `threshold` kereden fazla risk_detected aldıysa True döner."""
+    try:
+        res = supabase.table("events").select("event_type") \
+            .eq("machine_id", machine_id).eq("dataset_type", dataset_type) \
+            .eq("event_type", "risk_detected") \
+            .order("created_at", desc=True).limit(lookback).execute()
+        count = len(res.data or [])
+        return count > threshold
+    except Exception as e:
+        print(f"[is_recurring_issue] check failed for {machine_id}: {e}")
+        return False
+
+async def generate_escalation_text_async(machine_id: str, risk_probability: float, fault_type: str, dataset_type: str):
+    set_agent_status("diagnosis", "working", machine_id=None , dataset_type=dataset_type)
+
+    prompt = (
+        f"Machine {machine_id} has crossed its risk threshold again "
+        f"(risk probability: {risk_probability:.2f}, simulated fault type: {fault_type.replace('_', ' ')}). "
+        f"This machine has been flagged as at-risk multiple times recently — this looks like a "
+        f"RECURRING issue, not a one-off event. Write ONE short, more urgent sentence (max 25 words) "
+        f"for a maintenance technician, explicitly flagging this as a likely persistent/underlying "
+        f"problem that may need deeper inspection rather than a routine repair."
+    )
+    try:
+        response = await asyncio.to_thread(
+            _chat_client.complete,
+            model=AZURE_AI_DEPLOYMENT,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=70,
+        )
+        diagnosis_text = response.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"[generate_escalation_text_async] LLM call failed: {e}")
+        diagnosis_text = f"{machine_id}: RECURRING risk detected ({fault_type.replace('_', ' ')}), escalation diagnosis unavailable."
+
+    log_event(machine_id, "escalation_diagnosis_complete", diagnosis_text,
+              agent_name="diagnosis", dataset_type=dataset_type)
+    print(f"[escalation] {machine_id}: {diagnosis_text}")
+    set_agent_status("diagnosis", "idle", dataset_type=dataset_type)
+
+
+async def escalation_node_lg(state: SimulationState) -> SimulationState:
+    dataset_type = state["dataset_type"]
+
+    for result in state["tick_results"]:
+        machine_id = result["id"]
+        is_at_risk = result["status"] == "at_risk"
+
+        if is_at_risk and machine_id not in _already_diagnosed[dataset_type]:
+            _already_diagnosed[dataset_type].add(machine_id)
+            await generate_escalation_text_async(
+                machine_id, result["risk_probability"], result["fault_type"], dataset_type
+            )
+        elif not is_at_risk and machine_id in _already_diagnosed[dataset_type]:
+            _already_diagnosed[dataset_type].discard(machine_id)
+
+    return state
+
+def route_after_monitoring(state: SimulationState) -> str:
+    """Monitoring'den sonra hangi node'a gidileceğine karar verir."""
+    dataset_type = state["dataset_type"]
+
+    for result in state["tick_results"]:
+        if result["status"] == "at_risk" and is_recurring_issue(result["id"], dataset_type):
+            return "escalation"
+
+    return "diagnosis"
+
+    
 
 # ---- Stage 6: Reporting Node ----
 TP_VALUE = 50000
@@ -414,7 +526,7 @@ async def simulation_loop(dataset_type: str):
     machines_state[dataset_type] = {f"{prefix}{i+1:02d}": init_machine_state(f"{prefix}{i+1:02d}", dataset_type) for i in range(N_MACHINES)}
     print(f"Initialized {N_MACHINES} {dataset_type} machines.")
     
-    # Initialize Crews if they don't exist
+    # Initialize Crews if they don't exist, and load active repairs
     try:
         res = supabase.table("crews").select("*").eq("dataset_type", dataset_type).execute()
         if not res.data or len(res.data) < 3:
@@ -424,6 +536,14 @@ async def simulation_loop(dataset_type: str):
                     "dataset_type": dataset_type,
                     "status": "available"
                 }).execute()
+        else:
+            # Sync _active_repairs with DB on startup
+            for c in res.data:
+                if c["status"] == "dispatched" and c["assigned_machine_id"]:
+                    _active_repairs[dataset_type][c["assigned_machine_id"]] = {
+                        "crew_id": c["id"],
+                        "ticks_remaining": c.get("eta_sim_hours", 5)
+                    }
     except Exception as e:
         print(f"Failed to init crews for {dataset_type}: {e}")
     
@@ -438,9 +558,13 @@ async def simulation_loop(dataset_type: str):
     while True:
         try:
             tick_results = tick_all_machines(dataset_type)
-            monitoring_node(tick_results, dataset_type)
-            diagnosis_node(tick_results, dataset_type)
-            planning_node(tick_results, dataset_type)
+            initial_state: SimulationState = {
+                "tick_results": tick_results,
+                "current_machine_id": None,
+                "dataset_type": dataset_type,
+            }
+            config = {"configurable": {"thread_id": dataset_type}}
+            result = await simulation_graph.ainvoke(initial_state, config=config)
             
             loop_count += 1
             if loop_count >= 30:
@@ -451,6 +575,39 @@ async def simulation_loop(dataset_type: str):
             print(f"[simulation_loop] {dataset_type} tick error: {e}")
         await asyncio.sleep(TICK_INTERVAL_SECONDS)
 
+
+def build_simulation_graph():
+    graph = StateGraph(SimulationState)
+
+    graph.add_node("monitoring", monitoring_node_lg)
+    graph.add_node("diagnosis", diagnosis_node_lg)
+    graph.add_node("escalation", escalation_node_lg)
+    graph.add_node("planning", planning_node_lg)
+
+    graph.set_entry_point("monitoring")
+    graph.add_conditional_edges(
+        "monitoring",
+        route_after_monitoring,
+        {"diagnosis": "diagnosis", "escalation": "escalation"}
+    )
+    graph.add_edge("diagnosis", "planning")
+    graph.add_edge("escalation", "planning")
+    graph.add_edge("planning", END)
+
+    checkpointer = MemorySaver()
+    return graph.compile(checkpointer=checkpointer)
+
+simulation_graph = build_simulation_graph()
+
+def is_human_approval_enabled() -> bool:
+    try:
+        res = supabase.table("app_settings").select("value").eq("key", "human_approval_enabled").execute()
+        if res.data:
+            return res.data[0]["value"] == "true"
+        return False
+    except Exception as e:
+        print(f"[is_human_approval_enabled] check failed: {e}")
+        return False
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -476,3 +633,26 @@ def health_check():
 async def trigger_monthly_report(dataset_type: str = "bearing"):
     await reporting_node(dataset_type)
     return {"status": "report generated"}
+
+
+@app.get("/pending-approvals/{dataset_type}")
+async def get_pending_approvals(dataset_type: str):
+    """O an duraklamış (interrupt olmuş) bir işlem var mı, varsa detayını döner."""
+    config = {"configurable": {"thread_id": dataset_type}}
+    state = simulation_graph.get_state(config)
+
+    if state.next:  # graph'ın devam etmeyi beklediği bir node varsa
+        # interrupt'ın kendi payload'ını state.tasks içinden çekiyoruz
+        for task in state.tasks:
+            if task.interrupts:
+                return {"pending": True, "details": task.interrupts[0].value}
+    return {"pending": False}
+
+
+@app.post("/approve-dispatch/{dataset_type}")
+async def approve_dispatch(dataset_type: str, approved: bool):
+    """Bekleyen bir onayı, evet/hayır cevabıyla devam ettirir."""
+    config = {"configurable": {"thread_id": dataset_type}}
+    from langgraph.types import Command
+    await simulation_graph.ainvoke(Command(resume={"approved": approved}), config=config)
+    return {"status": "resumed", "approved": approved}

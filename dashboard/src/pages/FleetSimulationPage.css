@@ -1,12 +1,12 @@
 .fleet-simulation-container {
   position: relative;
   height: calc(100vh - 60px);
-  padding: 20px;
+  padding: 15px;
   box-sizing: border-box;
   color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
 }
 
 .fleet-grid {
