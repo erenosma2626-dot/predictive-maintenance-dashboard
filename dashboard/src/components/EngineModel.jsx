@@ -1,6 +1,6 @@
 import React, { useRef, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Environment } from '@react-three/drei';
+import { useGLTF, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import './EngineModel.css';
 
@@ -131,7 +131,6 @@ const EngineModel = ({ isAlert, maintenanceProbability, dataset }) => {
         <directionalLight position={[10, 10, 10]} intensity={1} />
         <React.Suspense fallback={null}>
           <EngineObject isAlert={isAlert} maintenanceProbability={maintenanceProbability} dataset={dataset} />
-          <Environment preset="city" />
         </React.Suspense>
         <OrbitControls enableZoom={true} enablePan={true} autoRotate={false} />
       </Canvas>

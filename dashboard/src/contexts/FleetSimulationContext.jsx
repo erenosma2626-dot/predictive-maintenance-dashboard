@@ -16,11 +16,11 @@ export function FleetSimulationProvider({ children, dataset = 'bearing' }) {
   useEffect(() => {
     const fetchInitial = async () => {
       const [{ data: m }, { data: c }, { data: e }, { data: r }, { data: a }] = await Promise.all([
-        supabase.table('machines').select('*').order('id'),
-        supabase.table('crews').select('*').order('id'),
-        supabase.table('events').select('*').order('sim_timestamp', { ascending: false }).limit(200),
-        supabase.table('monthly_reports').select('*').order('month_number', { ascending: false }).limit(100),
-        supabase.table('agent_status').select('*')
+        supabase.from('machines').select('*').order('id'),
+        supabase.from('crews').select('*').order('id'),
+        supabase.from('events').select('*').order('sim_timestamp', { ascending: false }).limit(200),
+        supabase.from('monthly_reports').select('*').order('month_number', { ascending: false }).limit(100),
+        supabase.from('agent_status').select('*')
       ])
       
       if (m) setAllMachines(m)

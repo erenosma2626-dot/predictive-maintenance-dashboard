@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Environment } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import { useFleetSimulation } from '../../contexts/FleetSimulationContext'
 import { BearingModel } from '../BearingModel'
 import { EngineObject } from '../EngineModel'
@@ -66,7 +66,6 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
               maxPolarAngle={Math.PI / 2 + 0.2}
               minPolarAngle={Math.PI / 2 - 0.2}
             />
-            <Environment preset="city" />
           </Canvas>
         </div>
 

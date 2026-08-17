@@ -24,6 +24,7 @@ export class LiveService {
   }
 
   connect() {
+    this.intentionalClose = false;
     this.ws = new WebSocket(`${this.WS_URL}/live`);
     
     this.ws.onopen = () => {
@@ -51,7 +52,9 @@ export class LiveService {
 
     this.ws.onerror = (error) => {
       console.error("WebSocket error:", error);
-      this.ws.close();
+      if (this.ws) {
+        this.ws.close();
+      }
     };
   }
 
