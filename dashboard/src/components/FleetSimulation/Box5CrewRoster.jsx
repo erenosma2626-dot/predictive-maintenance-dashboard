@@ -60,7 +60,8 @@ export function Box5CrewRoster() {
               </span>
             </div>
           )
-        })}
+        })
+        )}
       </div>
     </>
   )
