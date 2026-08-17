@@ -18,9 +18,9 @@ export function Box3PriorityQueue() {
       // Find if a crew is dispatched to this machine
       const assignedCrew = crews.find(c => c.assigned_machine_id === m.id)
       
-      let statusText = 'Queued (no crew available)'
+      let statusText = t('fleet.queued')
       if (assignedCrew) {
-        statusText = `Crew dispatched (ETA: ${assignedCrew.eta_sim_hours} ticks)`
+        statusText = `${t('fleet.crew_dispatched')} (${t('fleet.eta')}: ${assignedCrew.eta_sim_hours})`
       }
 
       return {
@@ -35,7 +35,7 @@ export function Box3PriorityQueue() {
       <div className="panel-title">{t('fleet.priority_queue')}</div>
       <div className="scrollable-content">
         {priorityQueue.length === 0 ? (
-          <div style={{ opacity: 0.5, padding: '10px' }}>No machines currently at risk.</div>
+          <div style={{ opacity: 0.5, padding: '10px' }}>{t('fleet.no_machines_at_risk')}</div>
         ) : (
           priorityQueue.map((item, index) => (
             <div 

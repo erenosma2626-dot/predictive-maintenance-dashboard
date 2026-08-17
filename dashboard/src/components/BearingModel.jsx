@@ -11,15 +11,14 @@ export function BearingModel({ highlightedRegion = null, ...props }) {
   const outerRef = useRef()
   const rollerRef = useRef()
 
-  // Clone materials so we don't mutate the originals globally
   const clonedMaterials = useMemo(() => {
     const mats = {
-      roller_chrome: materials.roller_chrome.clone(),
-      cage_bronze: materials.cage_bronze.clone(),
-      race_steel: materials.race_steel.clone(),
-      shaft_steel: materials.shaft_steel.clone(),
-      housing_iron: materials.housing_iron.clone(),
-      load_arrow: materials.load_arrow.clone(),
+      roller_chrome: new THREE.MeshBasicMaterial(),
+      cage_bronze: new THREE.MeshBasicMaterial(),
+      race_steel: new THREE.MeshBasicMaterial(),
+      shaft_steel: new THREE.MeshBasicMaterial(),
+      housing_iron: new THREE.MeshBasicMaterial(),
+      load_arrow: new THREE.MeshBasicMaterial(),
     }
     // Set wireframe for all materials to match the requested aesthetic
     Object.values(mats).forEach(mat => {
@@ -29,14 +28,12 @@ export function BearingModel({ highlightedRegion = null, ...props }) {
       mat.color = new THREE.Color('#88aadd') // Slightly bluish tech color
     })
     return mats
-  }, [materials])
+  }, [])
 
   // Custom alert material
   const alertMaterial = useMemo(() => {
-    const mat = new THREE.MeshStandardMaterial({
+    const mat = new THREE.MeshBasicMaterial({
       color: '#ff4444',
-      emissive: '#ff0000',
-      emissiveIntensity: 0.5,
       wireframe: true,
       transparent: true,
       opacity: 0.8
@@ -55,7 +52,7 @@ export function BearingModel({ highlightedRegion = null, ...props }) {
     // Pulse effect if highlighted
     if (highlightedRegion) {
       const intensity = (Math.sin(t * Math.PI * 2) + 1) / 2 // 0 to 1, 1Hz
-      alertMaterial.emissiveIntensity = 0.2 + (intensity * 0.8)
+      alertMaterial.opacity = 0.4 + (intensity * 0.6)
     }
   })
 

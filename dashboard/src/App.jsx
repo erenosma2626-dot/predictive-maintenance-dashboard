@@ -13,7 +13,7 @@ import './App.css';
 
 function App() {
   const [activeTab, setActiveTab] = useState('LIVE');
-  const [dataset, setDataset] = useState('cmapss'); // 'cmapss' or 'bearing'
+  const [dataset, setDataset] = useState('bearing'); // 'cmapss' or 'bearing'
 
   const { currentData, history, logs, isAlert } = useLiveStream(dataset);
 

@@ -15,7 +15,7 @@ export const EngineObject = ({ isAlert, maintenanceProbability, dataset }) => {
   // Create a custom material that matches our dashboard
   const material = useMemo(() => {
     // Normal color is a subtle steel/blueish, alert is pulsing red
-    return new THREE.MeshStandardMaterial({
+    return new THREE.MeshBasicMaterial({
       color: isAlert ? '#ff3333' : '#4a5568',
       wireframe: true,
       transparent: true,

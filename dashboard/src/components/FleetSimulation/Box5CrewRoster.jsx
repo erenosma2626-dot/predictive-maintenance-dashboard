@@ -40,7 +40,13 @@ export function Box5CrewRoster() {
     <>
       <div className="panel-title">{t('fleet.crew_roster')}</div>
       <div className="scrollable-content">
-        {crews.map(crew => {
+        {crews.length === 0 ? (
+          <div style={{ padding: '10px', display: 'flex', alignItems: 'center', gap: '10px', opacity: 0.7, fontSize: '13px', fontFamily: 'monospace' }}>
+            <div className="spinner" style={{ width: '12px', height: '12px', border: '2px solid #88aa00', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            {t('fleet.loading_crews')}
+          </div>
+        ) : (
+          crews.map(crew => {
           const isAvailable = crew.status === 'available'
           const currentEta = localEtas[crew.id] !== undefined ? localEtas[crew.id] : crew.eta_sim_hours
           
