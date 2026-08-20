@@ -776,5 +776,279 @@
       "en": "If a machine is flagged as at-risk multiple times recently, it's routed to a separate 'escalation' diagnosis that explicitly flags it as a likely persistent issue rather than a one-off. Optionally, you can require human approval before any repair crew is dispatched (toggle above) - when enabled, the system pauses and waits for a decision instead of dispatching automatically.",
       "tr": "Bir makine yakın zamanda birden çok kez risk altında olarak işaretlenirse, bu durum tek seferlik bir olaydan ziyade kalıcı bir sorun olma ihtimalini açıkça belirten ayrı bir 'eskalasyon' teşhisine yönlendirilir. İsteğe bağlı olarak, herhangi bir onarım ekibi sevk edilmeden önce insan onayı gerekmesini seçebilirsiniz (yukarıdaki geçiş düğmesi) — bu özellik etkinleştirildiğinde sistem otomatik sevk yapmak yerine duraklar ve bir karar bekler."
     }
+  },
+  "copilot": {
+    "manual_mode_title": {
+      "en": "Manual Crew Dispatch Mode",
+      "tr": "Manuel Ekip Sevk Modu"
+    },
+    "manual_mode_desc": {
+      "en": "When active, auto-dispatch is paused and the operator manages maintenance steps.",
+      "tr": "Aktifken otomatik sevk durdurulur ve operatör bakım adımlarını yönetir."
+    },
+    "mode_active": {
+      "en": "ACTIVE",
+      "tr": "AKTİF"
+    },
+    "mode_passive": {
+      "en": "PASSIVE",
+      "tr": "PASİF"
+    },
+    "open_station": {
+      "en": "Open Intervention Station",
+      "tr": "Müdahale İstasyonunu Aç"
+    },
+    "chatbot_tooltip": {
+      "en": "Chatbot",
+      "tr": "Chatbot"
+    },
+    "chatbot_title": {
+      "en": "Bearing AI Assistant",
+      "tr": "Rulman AI Asistanı"
+    },
+    "target_machine": {
+      "en": "Target",
+      "tr": "Hedef"
+    },
+    "groq_active": {
+      "en": "Groq RAG Active",
+      "tr": "Groq RAG Aktif"
+    },
+    "type_question": {
+      "en": "Ask a technical question...",
+      "tr": "Teknik soru sor..."
+    },
+    "send": {
+      "en": "Send",
+      "tr": "Gönder"
+    },
+    "operator": {
+      "en": "Operator",
+      "tr": "Operatör"
+    },
+    "assistant": {
+      "en": "Bearing Assistant",
+      "tr": "Rulman Asistanı"
+    },
+    "thinking": {
+      "en": "Preparing response...",
+      "tr": "Yanıt hazırlanıyor..."
+    },
+    "modal_title": {
+      "en": "Industrial AI Bearing Diagnosis & Operator Station",
+      "tr": "Endüstriyel AI Rulman Teşhis & Operatör Müdahale İstasyonu"
+    },
+    "modal_subtitle": {
+      "en": "5-Stage RAG Guide & Manual Dispatch Control",
+      "tr": "5 Aşamalı RAG Kılavuzu & Manuel Sevk Kontrolü"
+    },
+    "sim_paused": {
+      "en": "SIMULATION PAUSED",
+      "tr": "SIMÜLASYON DURAKLATILDI"
+    },
+    "scene1_tab": {
+      "en": "1. Fault Alert",
+      "tr": "1. Arıza Bildirimi"
+    },
+    "scene2_tab": {
+      "en": "2. AI Assistant (Chatbot)",
+      "tr": "2. AI Asistan (Chatbot)"
+    },
+    "scene3_tab": {
+      "en": "3. Machine & Crew Selection",
+      "tr": "3. Makine & Ekip Seçimi"
+    },
+    "scene4_tab": {
+      "en": "4. Solution SOP (Verification)",
+      "tr": "4. Çözüm Ne? (Doğrulama)"
+    },
+    "scene5_tab": {
+      "en": "5. Dispatch & Repair List",
+      "tr": "5. Sevk & Onarım Listesi"
+    },
+    "alert_risk": {
+      "en": "ALERT: Critical Vibration & Anomaly Detected on {id}",
+      "tr": "BİLDİRİM: {id} Rulmanında Kritik Titreşim & Anomali Tespit Edildi"
+    },
+    "alert_healthy": {
+      "en": "NOTICE: {id} Bearing Operating within Normal Parameters",
+      "tr": "BİLDİRİM: {id} Rulmanı Normal Parametrelerde Çalışıyor"
+    },
+    "fault_status": {
+      "en": "Fault Status:",
+      "tr": "Arıza Durumu:"
+    },
+    "risk_prob": {
+      "en": "Risk Probability:",
+      "tr": "Risk İhtimali:"
+    },
+    "asset_params": {
+      "en": "Asset Parameters",
+      "tr": "Varlık Parametreleri"
+    },
+    "machine_label": {
+      "en": "Machine:",
+      "tr": "Makine:"
+    },
+    "unit_desc": {
+      "en": "Industrial Rolling Bearing Unit",
+      "tr": "Endüstriyel Rulman Ünitesi"
+    },
+    "status_label": {
+      "en": "Status:",
+      "tr": "Durum:"
+    },
+    "status_at_risk": {
+      "en": "AT RISK (Intervention Required)",
+      "tr": "AT RISK (Müdahale Gerekli)"
+    },
+    "status_healthy": {
+      "en": "HEALTHY",
+      "tr": "HEALTHY (Sağlıklı)"
+    },
+    "life_wear": {
+      "en": "Current Life Wear:",
+      "tr": "Mevcut Ömür Yıpranması:"
+    },
+    "highlighted_zone": {
+      "en": "Highlighted Zone:",
+      "tr": "Vurgulanan Bölge:"
+    },
+    "guide_title": {
+      "en": "Operator Intervention Guide",
+      "tr": "Operatör Müdahale Rehberi"
+    },
+    "guide_p1": {
+      "en": "To resolve this fault, follow the menu above in order:",
+      "tr": "Bu arızanın giderilmesi için yukarıdaki menüden sırasıyla:"
+    },
+    "guide_s2": {
+      "en": "2. AI Assistant: Learn official SOP steps from engineering manual & catalog.",
+      "tr": "2. AI Asistan: Resmi mühendislik kılavuzundan ve arıza kataloğundan doğru SOP adımlarını öğrenin."
+    },
+    "guide_s3": {
+      "en": "3. Machine & Crew: Select the faulty unit and an available maintenance crew.",
+      "tr": "3. Makine & Ekip Seçimi: Arızalı üniteyi ve müsait durumdaki bakım ekibini belirleyin."
+    },
+    "guide_s4": {
+      "en": "4. Solution Verification: Enter proposed SOP actions and obtain AI verification.",
+      "tr": "4. Çözüm Doğrulama: Uygulanacak adımları girerek AI onayını alın."
+    },
+    "guide_s5": {
+      "en": "5. Dispatch & Repair: Track ongoing repair progression in the accordion list.",
+      "tr": "5. Sevk & Onarım: Ekip sahaya sevk edilerek onarım sürecini açılır-kapanır listeden takip edin."
+    },
+    "btn_next_crew": {
+      "en": "Next (Select Crew) ➔",
+      "tr": "İleri (Ekip Seç) ➔"
+    },
+    "btn_back_chat": {
+      "en": "⬅ Back (Chatbot)",
+      "tr": "⬅ Geri (Chatbot)"
+    },
+    "btn_next_verify": {
+      "en": "NEXT (Verify Solution) ➔",
+      "tr": "İLERİ (Çözümü Doğrula) ➔"
+    },
+    "scene3_instruction": {
+      "en": "Please select the target machine and the maintenance crew to dispatch:",
+      "tr": "Lütfen müdahale edilecek arızalı makineyi ve görevlendirilecek ekibi seçiniz:"
+    },
+    "faulty_machines": {
+      "en": "At-Risk / Faulty Machines",
+      "tr": "Arızalı / Riskli Makineler"
+    },
+    "crews_status": {
+      "en": "Maintenance Crew Status",
+      "tr": "Bakım Ekipleri Durumu"
+    },
+    "selected": {
+      "en": "SELECTED",
+      "tr": "SEÇİLİ"
+    },
+    "scene4_instruction": {
+      "en": "Enter the official repair steps, parts, or temperature/lubrication procedure for this fault:",
+      "tr": "Bu arıza için uygulanacak resmi onarım adımlarını, parçaları veya sıcaklık/yağlama prosedürünü yazınız:"
+    },
+    "scene4_placeholder": {
+      "en": "Example: 'After LOTO isolation, dismount bearing with hydraulic puller, inspect shaft runout, heat new SKF bearing to 110°C via induction heater, install and pack 15g Mobil Polyrex EM grease.'",
+      "tr": "Örnek: 'LOTO izolasyonu yapıldıktan sonra rulman hidrolik çektirme ile sökülecek, şaft runout kontrol edilecek, yeni SKF rulman indüksiyonla 110°C ısıtılıp takılacak ve 15g Mobil Polyrex EM gres basılacak.'"
+    },
+    "scene4_verify_btn": {
+      "en": "Verify Solution & Approve",
+      "tr": "Çözümü Doğrula ve Onayla"
+    },
+    "scene4_verifying": {
+      "en": "Verifying SOP with Knowledge Base...",
+      "tr": "SOP Doğrulaması Yapılıyor..."
+    },
+    "scene4_passed": {
+      "en": "SOLUTION VERIFIED",
+      "tr": "ÇÖZÜM DOĞRULANDI"
+    },
+    "scene4_failed": {
+      "en": "SOLUTION INCOMPLETE OR INSUFFICIENT",
+      "tr": "ÇÖZÜM YETERSİZ VEYA EKSİK"
+    },
+    "scene4_score": {
+      "en": "Score:",
+      "tr": "Skor:"
+    },
+    "scene4_missing": {
+      "en": "Missing Elements:",
+      "tr": "Eksik Noktalar:"
+    },
+    "scene4_retry": {
+      "en": "Consult Manual Again (Chatbot)",
+      "tr": "Kılavuza Tekrar Bak (Chatbot)"
+    },
+    "scene5_title": {
+      "en": "Active Maintenance Crews & Repair Tasks",
+      "tr": "Aktif Bakım Ekipleri ve Onarım İşleri"
+    },
+    "scene5_subtitle": {
+      "en": "Real-time repair progression and verified problem/solution records",
+      "tr": "Sevk edilen makinelerin onarım durumu ve detaylı problem/çözüm kayıtları"
+    },
+    "scene5_close_btn": {
+      "en": "Close & Resume Simulation",
+      "tr": "Kapat ve Simülasyona Dön"
+    },
+    "scene5_no_active": {
+      "en": "No active repair tasks in progress. You can dispatch a crew from Stage 3.",
+      "tr": "Şu anda devam eden aktif bir onarım görevi bulunmuyor. Sahne 3'ten ekip sevk edebilirsiniz."
+    },
+    "scene5_crew": {
+      "en": "Crew:",
+      "tr": "Ekip:"
+    },
+    "scene5_problem": {
+      "en": "Detected Problem:",
+      "tr": "Tespit Edilen Problem:"
+    },
+    "scene5_solution": {
+      "en": "Applied Solution & SOP:",
+      "tr": "Uygulanan Çözüm & SOP:"
+    },
+    "scene5_started": {
+      "en": "Dispatch Time:",
+      "tr": "Sevk Başlangıcı:"
+    },
+    "scene5_remaining": {
+      "en": "Remaining Duration:",
+      "tr": "Kalan Simülasyon Süresi:"
+    },
+    "scene5_repairing": {
+      "en": "REPAIRING",
+      "tr": "ONARILIYOR"
+    },
+    "scene5_completed": {
+      "en": "COMPLETED",
+      "tr": "TAMAMLANDI"
+    },
+    "box2_healthy_msg": {
+      "en": "System is operating within normal parameters. No active anomaly or fault risk.",
+      "tr": "Sistem normal parametrelerde çalışıyor. Aktif anomali veya arıza riski bulunmuyor."
+    }
   }
 }

@@ -11,27 +11,42 @@ from dotenv import load_dotenv
 from supabase import create_client, Client
 from azure.ai.inference import ChatCompletionsClient
 from azure.core.credentials import AzureKeyCredential
+import sys
 from typing import TypedDict, Optional
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.types import interrupt
 
+# ---- Config ----
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-
-
+from src.bearing_assistant.router import router as bearing_assistant_router
 
 class SimulationState(TypedDict):
     tick_results: list[dict]      # o anki tick'in tüm makine sonuçları
     current_machine_id: Optional[str]   # o an işlenen tek makine (node'lar arası akış için)
     dataset_type: str
-    
-# ---- Config ----
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 SUPABASE_URL = os.environ["SUPABASE_URL"]
 SUPABASE_KEY = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+def is_manual_crew_mode_enabled(dataset_type: str = "bearing") -> bool:
+    try:
+        res = supabase.table("app_settings").select("value").eq("key", f"manual_crew_mode_{dataset_type}").execute()
+        if not res.data:
+            res = supabase.table("app_settings").select("value").eq("key", "manual_crew_mode").execute()
+        if res.data:
+            return res.data[0]["value"] == "true"
+        return False
+    except Exception as e:
+        print(f"[is_manual_crew_mode_enabled] check failed: {e}")
+        return False
+
+
 
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 N_MACHINES = 12
@@ -58,6 +73,7 @@ feature_cols = ["rms_rm_norm", "kurtosis_rm_norm"]
 # ---- Simulation state ----
 rng = np.random.default_rng()
 
+_simulation_paused = {"bearing": False, "cmapss": False}
 machines_state = {"bearing": {}, "cmapss": {}}
 _already_flagged = {"bearing": set(), "cmapss": set()}
 _active_repairs = {"bearing": {}, "cmapss": {}}
@@ -243,6 +259,10 @@ def planning_node_lg(state: SimulationState) -> SimulationState:
         already_being_repaired = machine_id in _active_repairs[dataset_type]
 
         if is_at_risk and not already_being_repaired:
+            if is_manual_crew_mode_enabled(dataset_type):
+                # Manuel Müdahale Modu devrede: Ekipleri otomatik atama, operatörün Sahne 3-5 üzerinden sevk etmesini bekle
+                continue
+
             crew = get_available_crew(dataset_type)
             if crew:
                 # --- YENİ: onay gerekiyorsa dur ---
@@ -570,6 +590,10 @@ async def simulation_loop(dataset_type: str):
     loop_count = 0
     while True:
         try:
+            if _simulation_paused.get(dataset_type, False):
+                await asyncio.sleep(TICK_INTERVAL_SECONDS)
+                continue
+
             config = {"configurable": {"thread_id": dataset_type}}
             state = simulation_graph.get_state(config)
             is_paused = False
@@ -656,6 +680,34 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount Bearing Assistant Router (RAG Chatbot, Solution Evaluator, Manual Dispatch)
+app.include_router(bearing_assistant_router)
+
+@app.get("/api/settings/manual-crew-mode/{dataset_type}")
+def get_manual_crew_mode(dataset_type: str):
+    enabled = is_manual_crew_mode_enabled(dataset_type)
+    return {"dataset_type": dataset_type, "manual_crew_mode": enabled}
+
+@app.post("/api/settings/manual-crew-mode/{dataset_type}")
+def set_manual_crew_mode(dataset_type: str, enabled: bool):
+    try:
+        supabase.table("app_settings").upsert({
+            "key": f"manual_crew_mode_{dataset_type}",
+            "value": "true" if enabled else "false",
+        }).execute()
+        return {"dataset_type": dataset_type, "manual_crew_mode": enabled}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@app.get("/api/simulation/pause/{dataset_type}")
+def get_simulation_paused(dataset_type: str):
+    return {"dataset_type": dataset_type, "paused": _simulation_paused.get(dataset_type, False)}
+
+@app.post("/api/simulation/pause/{dataset_type}")
+def set_simulation_paused(dataset_type: str, paused: bool):
+    _simulation_paused[dataset_type] = paused
+    return {"dataset_type": dataset_type, "paused": paused}
 
 @app.get("/")
 def health_check():

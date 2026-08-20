@@ -7,7 +7,7 @@ import { EngineObject } from '../EngineModel'
 import { SimulationClock } from './SimulationClock'
 import { useLanguage } from '../../contexts/LanguageContext'
 
-export function Box2Diagnosis({ dataset = 'bearing' }) {
+export function Box2Diagnosis({ dataset = 'bearing', onOpenCopilot }) {
   const { machines, selectedMachineId, events, agentStatus } = useFleetSimulation()
   const { t } = useLanguage()
 
@@ -15,11 +15,13 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
     machines.find(m => m.id === selectedMachineId),
     [machines, selectedMachineId]) || machines[0]
 
+  const isAtRisk = selectedMachine?.status === 'at_risk'
+
   const relevantEvent = useMemo(() => {
-    if (!selectedMachine) return null
+    if (!selectedMachine || !isAtRisk) return null
     return events.find(e => e.machine_id === selectedMachine.id && 
       (e.event_type === 'diagnosis_complete' || e.event_type === 'escalation_diagnosis_complete'))
-  }, [events, selectedMachine])
+  }, [events, selectedMachine, isAtRisk])
 
   const diagAgent = agentStatus.find(a => a.agent_name === 'diagnosis')
   const isAgentWorking = diagAgent?.current_state === 'working' && diagAgent?.current_machine_id === selectedMachine?.id
@@ -28,8 +30,30 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
     <>
       <div className="panel-title" style={{ display: 'flex', alignItems: 'center' }}>
         <span>{t('fleet.diagnosis')}</span>
-        <div style={{ marginLeft: 'auto', background: 'rgba(0,0,0,0.3)', padding: '5px 15px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
-          <SimulationClock />
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {dataset === 'bearing' && onOpenCopilot && (
+            <button
+              onClick={onOpenCopilot}
+              style={{
+                background: isAtRisk ? 'linear-gradient(135deg, #ff8800, #ffaa00)' : 'rgba(255, 170, 0, 0.15)',
+                color: isAtRisk ? '#000' : '#ffaa00',
+                border: '1px solid rgba(255, 170, 0, 0.4)',
+                borderRadius: '4px',
+                padding: '4px 10px',
+                fontSize: '11px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+            >
+              <span>{t('copilot.open_station')}</span>
+            </button>
+          )}
+          <div style={{ background: 'rgba(0,0,0,0.3)', padding: '5px 15px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
+            <SimulationClock />
+          </div>
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -50,12 +74,12 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
             {dataset === 'cmapss' ? (
               <EngineObject
                 maintenanceProbability={selectedMachine?.life_pct ? (100 - selectedMachine.life_pct) / 100 : 1}
-                isAlert={selectedMachine?.status === 'at_risk'}
+                isAlert={isAtRisk}
                 dataset="cmapss"
               />
             ) : (
               <BearingModel
-                highlightedRegion={selectedMachine?.status === 'at_risk' ? selectedMachine.fault_type : null}
+                highlightedRegion={isAtRisk ? selectedMachine?.fault_type : null}
               />
             )}
 
@@ -76,7 +100,7 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
               <div className="spinner" style={{ width: '12px', height: '12px', border: '2px solid #ffaa00', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
               Diagnosis Agent is analyzing...
             </div>
-          ) : relevantEvent ? (
+          ) : isAtRisk && relevantEvent ? (
             <div style={{ color: relevantEvent.event_type === 'escalation_diagnosis_complete' ? '#ffaa00' : '#ddd', fontSize: '14px', lineHeight: '1.4' }}>
               <span style={{ color: '#88aa00', fontWeight: 'bold', marginRight: '5px' }}>Agent:</span>
               {relevantEvent.event_type === 'escalation_diagnosis_complete' && (
@@ -84,9 +108,13 @@ export function Box2Diagnosis({ dataset = 'bearing' }) {
               )}
               {relevantEvent.message}
             </div>
+          ) : isAtRisk ? (
+            <div style={{ color: '#ffaa00', fontStyle: 'italic' }}>
+              Risk tespit edildi, teşhis bekleniyor...
+            </div>
           ) : (
-            <div style={{ color: '#666', fontStyle: 'italic' }}>
-              Waiting for agent diagnosis...
+            <div style={{ color: '#44bb77', fontSize: '13px' }}>
+              {t('copilot.box2_healthy_msg')}
             </div>
           )}
         </div>
