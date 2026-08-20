@@ -1,6 +1,7 @@
 data/raw/**/*.csv
 data/raw/**/*.npy
 *.pkl
+!models/*.pkl
 *.pt
 __pycache__/
 .ipynb_checkpoints/
