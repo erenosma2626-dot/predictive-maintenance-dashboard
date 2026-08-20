@@ -69,6 +69,43 @@ An end-to-end, explainable predictive maintenance platform, multi-agent fleet si
 
 ### 1. Multi-Agent Fleet Simulation (LangGraph)
 A live, tick-driven simulation running a 12-unit industrial fleet continuously in the background. Each machine degrades independently based on empirical statistical patterns:
+
+```mermaid
+flowchart TD
+    subgraph SimulationLoop ["🔄 Continuous Tick Loop (TICK_INTERVAL_SECONDS = 3s)"]
+        TICK["⏱️ tick_all_machines(dataset_type)"] --> PAUSE_CHECK{"⏸️ Is Simulation Paused?"}
+        PAUSE_CHECK -- Yes (Operator Active) --> SLEEP["Sleep & Preserve Telemetry State"]
+        PAUSE_CHECK -- No --> MON["🤖 Monitoring Agent (Rule-Based Scanner)"]
+    end
+
+    subgraph LangGraphWorkflow ["Multi-Agent LangGraph Workflow"]
+        MON --> RISK_CHECK{"Risk Prob >= 0.75?"}
+        RISK_CHECK -- Normal (Healthy) --> PASS["No Action Needed"]
+        RISK_CHECK -- Critical Anomaly --> DIAG["🔍 Diagnosis Agent (Root-Cause Analysis)"]
+        
+        DIAG --> ESC_CHECK{"Recurring High Risk?"}
+        ESC_CHECK -- Yes --> ESC["⚠️ Escalation Node (Persistent Alert)"]
+        ESC_CHECK -- No --> APPROVAL_CHECK{"Is Manual Crew Mode / Human Approval ON?"}
+        ESC --> APPROVAL_CHECK
+        
+        APPROVAL_CHECK -- Yes --> INTERRUPT["🛑 Interrupt & Wait for Operator Action"]
+        APPROVAL_CHECK -- No (Autonomous) --> PLAN["📋 Planning Agent (Cost-of-Delay Queue)"]
+        
+        PLAN --> DISPATCH["🚚 Dispatch Available Crew (5-Tick Countdown)"]
+        DISPATCH --> REPAIR["🛠️ Repair Machine & Restore Life Pct to 100%"]
+    end
+
+    subgraph MonthlyReporting ["📊 Monthly Cycle (Every 30 Ticks)"]
+        TICK -.-> MONTH_CHECK{"Loop Count >= 30?"}
+        MONTH_CHECK -- Yes --> REP["📑 Reporting Agent (Executive Financial Summary)"]
+        REP --> SUPABASE_REPORT[("💾 monthly_reports (Supabase)")]
+    end
+
+    style SimulationLoop fill:#111522,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style LangGraphWorkflow fill:#131929,stroke:#ffaa00,stroke-width:2px,color:#fff
+    style MonthlyReporting fill:#141b24,stroke:#10b981,stroke-width:2px,color:#fff
+```
+
 - **Monitoring Agent:** Ultra-fast rule-based scanner checking wear and vibration thresholds without LLM latency.
 - **Diagnosis Agent:** Natural-language root-cause analyzer reviewing current telemetry and multi-tick history to identify persistent or escalating anomalies.
 - **Planning Agent:** Cost-of-delay priority queuing algorithm managing maintenance crew dispatching and backlog.
@@ -78,6 +115,42 @@ A live, tick-driven simulation running a 12-unit industrial fleet continuously i
 
 ### 2. Industrial Bearing AI Copilot & Knowledge RAG
 Mounted natively on `/api/bearing` and powered by Groq's high-speed inference (`openai/gpt-oss-20b` with `reasoning_effort="low"`):
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Operator as 👤 Human Operator / Technician
+    participant UI as 🖥️ Copilot Station / 2D Floating Widget
+    participant FastAPIServer as ⚡ FastAPI Server (/api/bearing)
+    participant SimEngine as ⏱️ Fleet Simulation Engine
+    participant RAGEngine as 🧠 Groq LLM (openai/gpt-oss-20b)
+    participant KnowledgeBase as 📚 Domain Knowledge Store
+
+    Operator->>UI: Clicks 2D Top-Down Bearing Widget or "Open Station"
+    UI->>FastAPIServer: POST /api/simulation/pause/bearing?paused=true
+    FastAPIServer->>SimEngine: Halts wear countdown & machine ticking (Auto-Pause)
+    
+    Note over UI,RAGEngine: Stage 1 & 2: Technical Inquiry & SOP Retrieval
+    Operator->>UI: Asks technical question (e.g. "What is the SOP for M04?")
+    UI->>FastAPIServer: POST /api/bearing/chat
+    FastAPIServer->>KnowledgeBase: Retrieves Asset Specs, 30+ Fault SOPs & ISO Manual
+    FastAPIServer->>RAGEngine: Generates concise diagnosis & 1-2 sentence team briefing note
+    RAGEngine-->>UI: Displays structured answer + quoted briefing sentence
+    
+    Note over UI,RAGEngine: Stage 3 & 4: Selection & Solution Verification Gate
+    Operator->>UI: Selects Target Machine (M04) + Available Crew (Crew-1)
+    Operator->>UI: Enters repair solution into Stage 4 text box
+    UI->>FastAPIServer: POST /api/bearing/verify-solution
+    FastAPIServer->>RAGEngine: Evaluator checks solution against official SOP
+    RAGEngine-->>UI: Returns score (e.g. 95/100), pass/fail & feedback
+    
+    Note over UI,SimEngine: Stage 5: Dispatch & Live Repair Progress
+    UI->>FastAPIServer: POST /api/bearing/manual-dispatch
+    FastAPIServer->>SimEngine: Assigns Crew-1 to M04 (5 ticks ETA)
+    UI->>FastAPIServer: POST /api/simulation/pause/bearing?paused=false
+    FastAPIServer->>SimEngine: Resumes simulation; live accordion progress updates
+```
+
 - **Deterministic Domain Knowledge Store (`data/bearing_knowledge/`):**
   - `bearing_assets.json`: 12 bearing asset records (SKF, FAG, NSK, Timken models, RPM, BPFI/BPFO/BSF/FTF multipliers, lubrication specs).
   - `bearing_fault_catalog.json`: 30+ failure modes with spectral signatures, Kurtosis/RMS thresholds, root causes, and official SOPs.
@@ -118,6 +191,44 @@ Mounted natively on `/api/bearing` and powered by Groq's high-speed inference (`
 ---
 
 ## 🔬 Machine Learning Methodology & Dataset Deep-Dive
+
+```mermaid
+flowchart LR
+    subgraph RawData ["1. Raw Telemetry Ingestion"]
+        CMAPSS["NASA C-MAPSS<br/>(21 Sensors / Turbofans)"]
+        IMS["IMS Bearing<br/>(20 kHz Vibration / Accelerometers)"]
+    end
+
+    subgraph FeatureEng ["2. Domain Feature Extraction"]
+        MTP_FILTER["MTP Filter: 14 Active Sensors<br/>(Monotonicity & Trendability)"]
+        CMAPSS --> MTP_FILTER
+        MTP_FILTER --> ROLL_FEATURES["42 Features:<br/>• 10-Cycle Rolling Mean (_rm)<br/>• Expanding Linear Slope (_trend)<br/>• Baseline Deviation (_dev)"]
+        
+        IMS --> VIB_FEATURES["Vibration Descriptors:<br/>• Rolling-Smoothed RMS (Energy)<br/>• Rolling Kurtosis (Impulsiveness)"]
+    end
+
+    subgraph Modeling ["3. Binary Alarm Model"]
+        RF_CMAPSS["Random Forest Classifier<br/>(Target: RUL <= 20 Cycles)"]
+        RF_BEARING["Random Forest Classifier<br/>(Leave-One-Bearing-Out 12-Fold)"]
+        
+        ROLL_FEATURES --> RF_CMAPSS
+        VIB_FEATURES --> RF_BEARING
+    end
+
+    subgraph Explainability ["4. Decision Support & XAI"]
+        SHAP["SHAP Factor Attribution<br/>(Per-Prediction Force Plots)"]
+        RISK_SCORE["Calibrated Risk Probability<br/>(Operational Alarm Threshold: 0.75)"]
+        
+        RF_CMAPSS --> SHAP
+        RF_CMAPSS --> RISK_SCORE
+        RF_BEARING --> RISK_SCORE
+    end
+
+    style RawData fill:#111522,stroke:#3b82f6,stroke-width:2px,color:#fff
+    style FeatureEng fill:#131929,stroke:#ffaa00,stroke-width:2px,color:#fff
+    style Modeling fill:#141b24,stroke:#10b981,stroke-width:2px,color:#fff
+    style Explainability fill:#1c1926,stroke:#8b5cf6,stroke-width:2px,color:#fff
+```
 
 ### Why a Binary Classification Alarm System?
 In predictive maintenance literature, Remaining Useful Life (RUL) is frequently framed as a continuous regression problem. However, on small run-to-failure datasets:
