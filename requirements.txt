@@ -10,3 +10,9 @@ uvicorn[standard]
 supabase
 python-dotenv
 azure-ai-inference
+groq
+langgraph
+langchain-core
+httpx
+pydantic
+requests
