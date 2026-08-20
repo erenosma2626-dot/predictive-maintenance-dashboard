@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 RAG (Retrieval-Augmented Generation) & Knowledge Retrieval Engine
-Loads bearing assets, 30+ fault catalog, maintenance history, and engineering manual.
-Provides structured deterministic and semantic retrieval for Scene 2 (Chatbot).
+Strict, evidence-grounded technical assistant for industrial rolling bearings.
+Enforces zero-hallucination, strict source attribution, and actionable field guidance.
 """
 import json
 import os
@@ -91,90 +91,142 @@ class BearingKnowledgeStore:
         if fault_data:
             matching_faults.append(fault_data)
         else:
+            q_lower = question.lower()
             for f in self.fault_catalog:
-                keywords = [
-                    f["fault_name"].lower(),
-                    f["fault_category"].lower(),
-                    f.get("description", "").lower(),
-                ]
-                q_lower = question.lower()
                 if (
-                    any(kw in q_lower for kw in ["iç bilezik", "bpfi", "inner"]) and f["fault_category"] == "inner_race"
-                    or any(kw in q_lower for kw in ["dış bilezik", "bpfo", "outer"]) and f["fault_category"] == "outer_race"
+                    any(kw in q_lower for kw in ["iç bilezik", "bpfi", "inner race", "iç halka"]) and f["fault_category"] == "inner_race"
+                    or any(kw in q_lower for kw in ["dış bilezik", "bpfo", "outer race", "dış halka"]) and f["fault_category"] == "outer_race"
                     or any(kw in q_lower for kw in ["bilye", "makara", "roller", "bsf", "cage", "kafes"]) and f["fault_category"] == "roller_element"
-                    or any(kw in q_lower for kw in ["yağ", "grease", "lubrication", "starvation", "yağsız"]) and f["fault_category"] == "lubrication"
+                    or any(kw in q_lower for kw in ["yağ", "grease", "lubrication", "starvation", "yağsız", "gres"]) and f["fault_category"] == "lubrication"
                     or any(kw in q_lower for kw in ["balans", "unbalance", "misalignment", "hizasızlık", "gevşeklik"]) and f["fault_category"] == "mechanical_stress"
                 ):
                     matching_faults.append(f)
 
         # 3. Retrieve Maintenance History
-        history_records = self.get_history_for_asset(resolved_asset_id) if resolved_asset_id else self.history[:4]
+        history_records = self.get_history_for_asset(resolved_asset_id) if resolved_asset_id else []
 
         return {
             "asset": asset_data,
             "faults": matching_faults[:3],
-            "history": history_records[:3],
+            "history": history_records[:4],
         }
 
 
 # Singleton instance
 store = BearingKnowledgeStore()
 
-SYSTEM_PROMPT_CHATBOT = """Sen endüstriyel rulman ve dönen ekipman arıza teşhisinde uzman, sahada pratik ve net çözümler sunan bir Endüstriyel AI Bakım Mühendisisin.
+SYSTEM_PROMPT_CHATBOT = """You are an expert Industrial Bearing Troubleshooting & Maintenance Copilot.
 
-KURALLAR:
-1. KULLANICI SELAMLAŞIYORSA VEYA GENEL SOHBET EDİYORSA ("naber", "selam", "merhaba", "nasılsın", "sen kimsin", "ne yapabilirsin", "hello", "hi"):
-   - Asla arıza teşhisi veya müdahale şablonu üretme!
-   - Samimi ve profesyonel 1-2 cümleyle yanıt ver, kendini tanıt ve sahadaki rulmanlar (M01-M12), arızalar, montaj sıcaklığı (örn. 110°C), yağlama miktarları veya resmi SOP adımları hakkında yardımcı olabileceğini belirt.
-
-2. TEKNİK VEYA ARIZA SORULARI İÇİN:
-   - Asla upuzun, karmaşık akademik tablolar üretme! Yanıtların kısa, öz, net ve doğrudan sahada uygulanabilir olsun (maksimum 100-120 kelime).
-   - Yanıtını 3 kısa bölümde sun:
-     • 1. Teşhis & Kök Neden: (1-2 cümle)
-     • 2. Temel Müdahale Adımları: (Madde imleriyle 2-3 kısa adım: Değişecek parça, montaj sıcaklığı örn. 110°C, gres tipi ve gramı).
-     • 3. Ekip Bilgilendirme Notu (ZORUNLU):
-       "Ekibi kısaca şu şekilde bilgilendirebilirsiniz: '[Makine ID'de şu arıza oluşmuş, LOTO sonrası şu parça sökülüp indüksiyonla 110°C ısıtılarak takılmalı ve şu kadar gram şu gres basılmalı.]'"
-
-3. TEKNİK TERMİNOLOJİ VE SIFIR HALÜSİNASYON:
-   - 'Deep groove ball bearing' için 'Derin oluklu bilyalı rulman' terimini kullan ('derin gözü bal' gibi hatalı çeviriler asla yapma).
-   - Yalnızca bağlamdaki doğru rulman modellerini, gres miktarlarını ve montaj sıcaklıklarını kullan.
+STRICT RULES - follow these exactly:
+1. Use ONLY the information provided in the "SOURCES" section below. Do not use any outside general knowledge, assumptions, or fabricated specifications.
+2. If the provided sources do not contain enough information to answer the question, state plainly: "Verilen kaynaklarda bu bilgi bulunmamaktadır." instead of guessing or filling gaps.
+3. Every claim you make must be traceable to a specific source in the context (e.g. "[Kaynak: Varlık Özellik Kartı | M01]" or "[Kaynak: Arıza Kataloğu & SOP | FLT-INNER-FAT-01]" or "[Kaynak: Bakım Geçmişi]").
+4. Clearly distinguish between two kinds of evidence:
+   - Official technical documentation & manufacturer SOPs (binding technical facts, mounting temp 110°C, grease type, torque, procedures).
+   - Maintenance history records (what happened previously on THIS specific machine - historical work order logs).
+5. If maintenance history shows "no record found" for an asset, state that plainly - do NOT interpret "no record" as "this asset has never had any issues." Absence of a record is not evidence of absence of a problem.
+6. GREETINGS & CASUAL CONVERSATION:
+   - If the user is greeting, saying hi, or making general conversation ("naber", "selam", "merhaba", "sen kimsin", "nasılsın", "hello", "hi"):
+   - Do NOT produce a fault diagnosis, repair steps, or symptom list.
+   - Reply warmly and concisely in 1-2 polite sentences, introduce yourself as the Industrial Bearing Copilot, and invite questions about machine specs, failure diagnosis, mounting procedures (e.g. induction heating to 110°C), grease charges, or SOP steps.
+7. TECHNICAL INQUIRIES & FAULT DIAGNOSIS:
+   - Keep answers concise, direct, and actionable (maximum 100-120 words).
+   - Present technical guidance in 3 structured sections:
+     • 1. Teşhis & Kök Neden: (1-2 sentences identifying the issue and root cause from sources).
+     • 2. Temel Müdahale Adımları: (2-3 bullet points: replacement part, mounting temperature e.g. 110°C induction, exact grease type and grams).
+     • 3. Ekip Bilgilendirme Notu (MANDATORY):
+       "Ekibi kısaca şu şekilde bilgilendirebilirsiniz: '[1-2 sentence actionable summary mentioning target machine, LOTO, mounting temp, and grease charge.]'"
+8. TECHNICAL TERMINOLOGY:
+   - Use correct Turkish engineering terminology: 'Derin oluklu bilyalı rulman' (Deep groove ball bearing), 'Silindirik makaralı rulman' (Cylindrical roller bearing). Never use literal machine translations like 'derin gözü bal'.
 """
 
 
+def format_asset_chunk(asset: Dict[str, Any]) -> str:
+    factors = asset.get("fault_frequency_factors", {})
+    return (
+        f"[Kaynak: Varlık Özellik Kartı | {asset.get('asset_id')} - {asset.get('display_name')}]\n"
+        f"- Makine & Konum: {asset.get('machine_type')} | {asset.get('location_in_plant')} ({asset.get('bearing_position')})\n"
+        f"- Rulman Modeli: {asset.get('bearing_model')} ({asset.get('bearing_type')})\n"
+        f"- Boyutlar: Mil Çapı: {asset.get('shaft_diameter_mm')} mm, Dış Çap: {asset.get('outer_diameter_mm')} mm, Genişlik: {asset.get('width_mm')} mm\n"
+        f"- Çalışma Şartları: {asset.get('nominal_rpm')} RPM | Radyal Yük: {asset.get('radial_load_kn')} kN | Eksenel Yük: {asset.get('axial_load_kn')} kN | Nominal Sıcaklık: {asset.get('operating_temp_nominal_c')}°C\n"
+        f"- Yağlama Spesifikasyonu: {asset.get('lubricant_type')} | Dolum: {asset.get('grease_charge_grams')} g | Aralık: {asset.get('lubrication_interval_hours')} saat\n"
+        f"- Kinematik Frekans Çarpanları: BPFI: {factors.get('bpfi_factor', '-')}x, BPFO: {factors.get('bpfo_factor', '-')}x, BSF: {factors.get('bsf_factor', '-')}x, FTF: {factors.get('ftf_factor', '-')}x\n"
+    )
+
+
+def format_fault_chunk(fault: Dict[str, Any]) -> str:
+    root_causes = ", ".join(fault.get("root_causes", []))
+    return (
+        f"[Kaynak: Arıza Kataloğu & SOP | Kod: {fault.get('fault_code')} - {fault.get('fault_name')}]\n"
+        f"- Kategori: {fault.get('fault_category')} | Şiddet: {fault.get('severity')} ({fault.get('iso_10816_zone')})\n"
+        f"- Spektral İz: {fault.get('spectral_signature')}\n"
+        f"- Kurtosis Aralığı: {fault.get('kurtosis_range')} | Termal Artış: +{fault.get('thermal_rise_c')}°C\n"
+        f"- Kök Nedenler: {root_causes}\n"
+        f"- Acil Eylem: {fault.get('immediate_action')}\n"
+        f"- STANDART OPERASYON PROSEDÜRÜ (SOP):\n{fault.get('standard_operating_procedure')}\n"
+    )
+
+
+def format_history_record(record: Dict[str, Any]) -> str:
+    return (
+        f"[Kaynak: Bakım Geçmişi | Varlık {record.get('asset_id')} | İş Emri {record.get('record_id')} ({record.get('event_date')}) - {record.get('shift')}]\n"
+        f"- Bildirilen Belirti: {record.get('reported_symptom')}\n"
+        f"- Teşhis Edilen Arıza: {record.get('fault_code_diagnosed')} | Duruş Süresi: {record.get('downtime_minutes')} dk\n"
+        f"- Yapılan İşlem: {record.get('actions_taken')}\n"
+        f"- Kök Neden Özeti: {record.get('root_cause_summary')}\n"
+    )
+
+
 def build_chat_user_prompt(question: str, context: Dict[str, Any]) -> str:
-    parts = []
+    parts = [f"USER QUESTION: {question}\n"]
 
-    # Asset context
-    if context.get("asset"):
-        a = context["asset"]
-        parts.append(f"### 📍 HEDEF MAKİNE / RULMAN VARLIĞI:\n"
-                     f"- ID: {a['asset_id']} ({a['display_name']})\n"
-                     f"- Makine & Konum: {a['machine_type']} - {a['location_in_plant']} ({a['bearing_position']})\n"
-                     f"- Rulman Modeli: {a['bearing_model']} ({a['bearing_type']})\n"
-                     f"- Yağlama: {a['lubricant_type']} | Miktar: {a['grease_charge_grams']}g | Aralık: {a['lubrication_interval_hours']} saat\n"
-                     f"- Çalışma Hızı: {a['nominal_rpm']} RPM | Nominal Sıcaklık: {a['operating_temp_nominal_c']}°C\n")
+    asset = context.get("asset")
+    if asset:
+        parts.append(f"RESOLVED ASSET: {asset.get('asset_id')} - {asset.get('display_name')}\n")
 
-    # Fault context
-    if context.get("faults"):
-        parts.append("### ⚠️ ARIZA KATALOĞU VE RESMİ STANDART OPERASYON PROSEDÜRÜ (SOP):\n")
-        for f in context["faults"]:
-            parts.append(f"Arıza Kodu: {f['fault_code']} - {f['fault_name']}\n"
-                         f"- Kategori: {f['fault_category']} | Şiddet: {f['severity']} ({f['iso_10816_zone']})\n"
-                         f"- Spektral İz: {f['spectral_signature']}\n"
-                         f"- Kurtosis Aralığı: {f['kurtosis_range']} | Sıcaklık Artışı: +{f['thermal_rise_c']}°C\n"
-                         f"- Kök Nedenler: {', '.join(f['root_causes'])}\n"
-                         f"- Acil Önlem: {f['immediate_action']}\n"
-                         f"- STANDART ONARIM PROSEDÜRÜ (SOP):\n{f['standard_operating_procedure']}\n")
+    parts.append("=== SOURCES ===\n")
 
-    # History context
-    if context.get("history"):
-        parts.append("### 📜 GEÇMİŞ BAKIM VE ARIZA KAYITLARI:\n")
-        for h in context["history"]:
-            parts.append(f"- İş Emri: {h['record_id']} ({h['event_date']}) - {h['shift']}\n"
-                         f"  Belirti: {h['reported_symptom']}\n"
-                         f"  Teşhis: {h['fault_code_diagnosed']} | Duruş: {h['downtime_minutes']} dk\n"
-                         f"  Yapılan İşlem: {h['actions_taken']}\n"
-                         f"  Kök Neden: {h['root_cause_summary']}\n")
+    # 1. Official Asset Specifications
+    if asset:
+        parts.append("--- Official Asset Specification & Technical Standards ---")
+        parts.append(format_asset_chunk(asset))
+        parts.append("")
+    else:
+        parts.append("--- Official Asset Specification & Technical Standards ---\n(No specific asset identified.)\n")
 
-    parts.append(f"### ❓ KULLANICI SORUSU:\n{question}\n\nLütfen yukarıdaki bağlam doğrultusunda net, teknik ve maddeler halinde rehberlik sağla.")
+    # 2. Fault Catalog & SOPs
+    faults = context.get("faults", [])
+    if faults:
+        parts.append("--- Fault Catalog & Standard Operating Procedures (SOP) ---")
+        for f in faults:
+            parts.append(format_fault_chunk(f))
+        parts.append("")
+    else:
+        parts.append("--- Fault Catalog & Standard Operating Procedures (SOP) ---\n(No direct matching fault catalog entry for this query.)\n")
+
+    # 3. Maintenance History
+    history = context.get("history", [])
+    if asset and not history:
+        parts.append("--- Maintenance History ---\n(No maintenance history record exists for this asset.)\n")
+    elif history:
+        parts.append("--- Maintenance History ---")
+        for h in history:
+            parts.append(format_history_record(h))
+        parts.append("")
+    else:
+        parts.append("--- Maintenance History ---\n(No relevant maintenance history found for this query.)\n")
+
+    # 4. Engineering Manual Excerpt if available
+    if store.manual_text:
+        parts.append("--- Official Engineering Manual (ISO 10816-3 & Mounting Guidelines) ---")
+        parts.append("[Kaynak: STD-ENG-BRG-2026-V4 Rulman Mühendislik Kılavuzu]\n"
+                     "- Montaj Kuralı: Bilyalı ve makaralı rulmanlar indüksiyonla tam 110°C ısıtılarak takılmalıdır (asla 125°C üzeri ısıtılmamalıdır).\n"
+                     "- Yağlama Kuralı: Rulman iç boşluğunun %30-%50'si belirtilen NLGI-2 sentetik gresle doldurulmalıdır.\n"
+                     "- LOTO Kuralı: Müdahale öncesi Lockout/Tagout (LOTO) izolasyonu zorunludur.\n")
+
+    parts.append(
+        "=== END SOURCES ===\n\n"
+        "Answer the user's question using ONLY the sources above, following the system instructions strictly."
+    )
+
     return "\n".join(parts)
