@@ -1,12 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { useLanguage } from './LanguageContext'
 
 const BearingChatContext = createContext()
 
 export function BearingChatProvider({ children }) {
-  const [chatMessages, setChatMessages] = useState([
+  const { language } = useLanguage()
+
+  const [chatMessages, setChatMessages] = useState(() => [
     {
       sender: 'bot',
-      text: 'Rulman Arıza & Bakım Asistanı devrede. Rulman arızaları, montaj sıcaklığı, gresleme miktarı, titreşim izleri veya resmi SOP adımları hakkında teknik sorularınızı iletebilirsiniz.'
+      text: language === 'en'
+        ? 'Bearing Anomaly & Maintenance Assistant active. You can ask technical questions regarding failure signatures, mounting temperature, grease charge amounts, or official SOP steps.'
+        : 'Rulman Arıza & Bakım Asistanı devrede. Rulman arızaları, montaj sıcaklığı, gresleme miktarı, titreşim izleri veya resmi SOP adımları hakkında teknik sorularınızı iletebilirsiniz.'
     }
   ])
   const [isChatLoading, setIsChatLoading] = useState(false)
@@ -15,6 +20,20 @@ export function BearingChatProvider({ children }) {
   const [activeRepairRecords, setActiveRepairRecords] = useState({})
 
   const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001'
+
+  // Update initial message when language changes if only 1 message exists
+  useEffect(() => {
+    if (chatMessages.length === 1 && chatMessages[0].sender === 'bot') {
+      setChatMessages([
+        {
+          sender: 'bot',
+          text: language === 'en'
+            ? 'Bearing Anomaly & Maintenance Assistant active. You can ask technical questions regarding failure signatures, mounting temperature, grease charge amounts, or official SOP steps.'
+            : 'Rulman Arıza & Bakım Asistanı devrede. Rulman arızaları, montaj sıcaklığı, gresleme miktarı, titreşim izleri veya resmi SOP adımları hakkında teknik sorularınızı iletebilirsiniz.'
+        }
+      ])
+    }
+  }, [language])
 
   const sendChatMessage = async (queryText, machineId, faultType) => {
     if (!queryText || !queryText.trim()) return
@@ -37,10 +56,15 @@ export function BearingChatProvider({ children }) {
         const data = await res.json()
         setChatMessages([...newMsgs, { sender: 'bot', text: data.answer, sources: data.source_documents }])
       } else {
-        setChatMessages([...newMsgs, { sender: 'bot', text: 'Yanıt alınırken bir hata oluştu. Lütfen tekrar deneyiniz.' }])
+        const errJson = await res.json().catch(() => null)
+        const errMsg = errJson?.detail || (language === 'en' ? 'An error occurred while generating response. Please try again.' : 'Yanıt alınırken bir hata oluştu. Lütfen tekrar deneyiniz.')
+        setChatMessages([...newMsgs, { sender: 'bot', text: errMsg }])
       }
     } catch (err) {
-      setChatMessages([...newMsgs, { sender: 'bot', text: 'Asistan servisine bağlanılamadı. Sunucunun çalıştığından emin olunuz.' }])
+      const networkMsg = language === 'en'
+        ? 'Could not connect to assistant service. Ensure the server is online.'
+        : 'Asistan servisine bağlanılamadı. Sunucunun çalıştığından emin olunuz.'
+      setChatMessages([...newMsgs, { sender: 'bot', text: networkMsg }])
     } finally {
       setIsChatLoading(false)
     }
@@ -52,8 +76,8 @@ export function BearingChatProvider({ children }) {
       [machineId]: {
         machine_id: machineId,
         crew_id: crewId,
-        problem: problem || 'Rulman Yıpranması / Anomali',
-        solution: solution || 'Standart Bakım & Yenileme Prosedürü',
+        problem: problem || (language === 'en' ? 'Bearing Degradation / Anomaly' : 'Rulman Yıpranması / Anomali'),
+        solution: solution || (language === 'en' ? 'Standard Maintenance & Renewal SOP' : 'Standart Bakım & Yenileme Prosedürü'),
         started_at: new Date().toLocaleTimeString(),
         total_ticks: 5,
         ticks_remaining: 5,
