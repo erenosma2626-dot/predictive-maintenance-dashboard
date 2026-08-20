@@ -119,36 +119,36 @@ Mounted natively on `/api/bearing` and powered by Groq's high-speed inference (`
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Operator as 👤 Human Operator / Technician
-    participant UI as 🖥️ Copilot Station / 2D Floating Widget
-    participant FastAPIServer as ⚡ FastAPI Server (/api/bearing)
-    participant SimEngine as ⏱️ Fleet Simulation Engine
-    participant RAGEngine as 🧠 Groq LLM (openai/gpt-oss-20b)
-    participant KnowledgeBase as 📚 Domain Knowledge Store
+    actor Operator as Operator / Technician
+    participant UI as Copilot UI / 2D Widget
+    participant API as FastAPI Backend (/api/bearing)
+    participant Sim as Fleet Simulation Engine
+    participant LLM as Groq LLM (openai/gpt-oss-20b)
+    participant KB as Knowledge Store
 
-    Operator->>UI: Clicks 2D Top-Down Bearing Widget or "Open Station"
-    UI->>FastAPIServer: POST /api/simulation/pause/bearing?paused=true
-    FastAPIServer->>SimEngine: Halts wear countdown & machine ticking (Auto-Pause)
+    Operator->>UI: Clicks 2D Bearing Widget or Open Station
+    UI->>API: POST /api/simulation/pause/bearing?paused=true
+    API->>Sim: Auto-Pause simulation (halt countdown and ticks)
     
-    Note over UI,RAGEngine: Stage 1 & 2: Technical Inquiry & SOP Retrieval
-    Operator->>UI: Asks technical question (e.g. "What is the SOP for M04?")
-    UI->>FastAPIServer: POST /api/bearing/chat
-    FastAPIServer->>KnowledgeBase: Retrieves Asset Specs, 30+ Fault SOPs & ISO Manual
-    FastAPIServer->>RAGEngine: Generates concise diagnosis & 1-2 sentence team briefing note
-    RAGEngine-->>UI: Displays structured answer + quoted briefing sentence
+    Note over UI,LLM: Stage 1 & 2: Technical Inquiry & SOP Retrieval
+    Operator->>UI: Asks technical question
+    UI->>API: POST /api/bearing/chat
+    API->>KB: Retrieve Asset Specs and SOPs
+    API->>LLM: Generate concise diagnosis and team briefing note
+    LLM-->>UI: Display answer and quoted briefing sentence
     
-    Note over UI,RAGEngine: Stage 3 & 4: Selection & Solution Verification Gate
-    Operator->>UI: Selects Target Machine (M04) + Available Crew (Crew-1)
-    Operator->>UI: Enters repair solution into Stage 4 text box
-    UI->>FastAPIServer: POST /api/bearing/verify-solution
-    FastAPIServer->>RAGEngine: Evaluator checks solution against official SOP
-    RAGEngine-->>UI: Returns score (e.g. 95/100), pass/fail & feedback
+    Note over UI,LLM: Stage 3 & 4: Selection & Solution Verification Gate
+    Operator->>UI: Selects Target Machine and Available Crew
+    Operator->>UI: Enters repair solution into Stage 4
+    UI->>API: POST /api/bearing/verify-solution
+    API->>LLM: Evaluator checks solution against SOP
+    LLM-->>UI: Return score, pass/fail status and feedback
     
-    Note over UI,SimEngine: Stage 5: Dispatch & Live Repair Progress
-    UI->>FastAPIServer: POST /api/bearing/manual-dispatch
-    FastAPIServer->>SimEngine: Assigns Crew-1 to M04 (5 ticks ETA)
-    UI->>FastAPIServer: POST /api/simulation/pause/bearing?paused=false
-    FastAPIServer->>SimEngine: Resumes simulation; live accordion progress updates
+    Note over UI,Sim: Stage 5: Dispatch & Live Repair Progress
+    UI->>API: POST /api/bearing/manual-dispatch
+    API->>Sim: Assign Crew to Machine (5 ticks ETA)
+    UI->>API: POST /api/simulation/pause/bearing?paused=false
+    API->>Sim: Resume simulation and update live progress
 ```
 
 - **Deterministic Domain Knowledge Store (`data/bearing_knowledge/`):**
