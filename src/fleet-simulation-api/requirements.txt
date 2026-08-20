@@ -7,3 +7,8 @@ pandas
 numpy
 scikit-learn
 langgraph
+langchain-core
+groq
+httpx
+pydantic
+requests
