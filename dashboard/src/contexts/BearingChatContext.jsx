@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useLanguage } from './LanguageContext'
+import { API_ENDPOINTS } from '../config/api'
 
 const BearingChatContext = createContext()
 
@@ -18,8 +19,6 @@ export function BearingChatProvider({ children }) {
   const [isFloatingChatOpen, setIsFloatingChatOpen] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [activeRepairRecords, setActiveRepairRecords] = useState({})
-
-  const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001'
 
   // Update initial message when language changes if only 1 message exists
   useEffect(() => {
@@ -43,7 +42,7 @@ export function BearingChatProvider({ children }) {
     setIsChatLoading(true)
 
     try {
-      const res = await fetch(`${apiBase}/api/bearing/chat`, {
+      const res = await fetch(API_ENDPOINTS.BEARING_CHAT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

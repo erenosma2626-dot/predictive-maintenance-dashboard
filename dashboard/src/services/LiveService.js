@@ -1,8 +1,8 @@
+import { API_BASE_URL } from '../config/api';
+
 export class LiveService {
   constructor(onDataReceived) {
-    // If running locally, this could be http://localhost:8000, 
-    // or the Render URL if deployed.
-    this.API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+    this.API_URL = API_BASE_URL;
     this.WS_URL = this.API_URL.replace("http://", "ws://").replace("https://", "wss://");
     
     this.onDataReceived = onDataReceived;

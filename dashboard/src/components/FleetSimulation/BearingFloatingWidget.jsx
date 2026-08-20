@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useBearingChat } from '../../contexts/BearingChatContext'
 import { useFleetSimulation } from '../../contexts/FleetSimulationContext'
 import { useLanguage } from '../../contexts/LanguageContext'
+import './BearingFloatingWidget.css'
 
 export function BearingFloatingWidget({ dataset = 'bearing' }) {
   const {
@@ -47,47 +48,13 @@ export function BearingFloatingWidget({ dataset = 'bearing' }) {
 
   return (
     <>
-      {/* 2D Top-Down Bearing Icon Button (Placed to the left of [i] fleet.about) */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '20px',
-          right: '215px',
-          zIndex: 1000
-        }}
-      >
+      {/* 2D Top-Down Bearing Icon Button */}
+      <div className="floating-widget-btn-wrapper">
         {/* Tooltip on Hover */}
         {isHovered && !isFloatingChatOpen && (
-          <div style={{
-            position: 'absolute',
-            bottom: '64px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'rgba(15, 18, 28, 0.95)',
-            border: '1px solid rgba(220, 230, 245, 0.45)',
-            color: '#ffffff',
-            fontSize: '11px',
-            fontWeight: '600',
-            letterSpacing: '0.4px',
-            padding: '4px 10px',
-            borderRadius: '6px',
-            whiteSpace: 'nowrap',
-            boxShadow: '0 4px 14px rgba(0,0,0,0.7), 0 0 10px rgba(220, 235, 255, 0.2)',
-            pointerEvents: 'none',
-            animation: 'fadeIn 0.15s ease'
-          }}>
+          <div className="floating-widget-tooltip">
             {t('copilot.chatbot_tooltip')}
-            <div style={{
-              position: 'absolute',
-              bottom: '-5px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              width: 0,
-              height: 0,
-              borderLeft: '5px solid transparent',
-              borderRight: '5px solid transparent',
-              borderTop: '5px solid rgba(15, 18, 28, 0.95)'
-            }} />
+            <div className="floating-widget-tooltip-arrow" />
           </div>
         )}
 
@@ -96,41 +63,7 @@ export function BearingFloatingWidget({ dataset = 'bearing' }) {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           title=""
-          style={{
-            background: isFloatingChatOpen
-              ? 'linear-gradient(135deg, rgba(255, 170, 0, 0.35), rgba(30, 35, 48, 0.95))'
-              : 'linear-gradient(135deg, #1a1d29, #10121a)',
-            border: isFloatingChatOpen
-              ? '2px solid rgba(255, 170, 0, 0.9)'
-              : '2px solid rgba(215, 228, 245, 0.5)',
-            borderRadius: '50%',
-            width: '54px',
-            height: '54px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 0,
-            transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-            boxShadow: isFloatingChatOpen
-              ? '0 0 24px rgba(255, 170, 0, 0.5)'
-              : '0 4px 16px rgba(0,0,0,0.7), 0 0 12px rgba(210, 225, 245, 0.18)',
-            transform: isFloatingChatOpen ? 'scale(1.06)' : 'scale(1)'
-          }}
-          onMouseOver={e => {
-            if (!isFloatingChatOpen) {
-              e.currentTarget.style.borderColor = '#ffffff'
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(235, 245, 255, 0.45), 0 4px 16px rgba(0,0,0,0.8)'
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.04)'
-            }
-          }}
-          onMouseOut={e => {
-            if (!isFloatingChatOpen) {
-              e.currentTarget.style.borderColor = 'rgba(215, 228, 245, 0.5)'
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.7), 0 0 12px rgba(210, 225, 245, 0.18)'
-              e.currentTarget.style.transform = 'translateY(0) scale(1)'
-            }
-          }}
+          className={`floating-bearing-btn ${isFloatingChatOpen ? 'active' : ''}`}
         >
           {/* 2D Top-Down Bearing SVG Icon */}
           <svg
@@ -178,24 +111,7 @@ export function BearingFloatingWidget({ dataset = 'bearing' }) {
 
       {/* Floating Phone-like Chat Drawer / Card */}
       {isFloatingChatOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '80px',
-            right: '20px',
-            width: '390px',
-            height: '560px',
-            background: 'linear-gradient(180deg, #131622 0%, #0d0f18 100%)',
-            border: '1px solid rgba(100, 160, 255, 0.3)',
-            borderRadius: '20px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.85), 0 0 30px rgba(100, 160, 255, 0.15)',
-            zIndex: 1001,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-          }}
-        >
+        <div className="floating-drawer-card">
           {/* Status Bar */}
           <div style={{
             padding: '12px 18px',
@@ -373,23 +289,6 @@ export function BearingFloatingWidget({ dataset = 'bearing' }) {
           </div>
         </div>
       )}
-
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px) scale(0.96);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        @keyframes spin {
-          100% { transform: rotate(360deg); }
-        }
-      `}} />
     </>
   )
 }

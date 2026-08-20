@@ -37,13 +37,13 @@ export function FleetSimulationProvider({ children, dataset = 'bearing' }) {
     const channel = supabase.channel(`fleet_sim_all`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'machines' }, payload => {
         setAllMachines(prev => {
-          const idx = prev.findIndex(m => m.id === payload.new.id)
+          const idx = prev.findIndex(m => m.id === payload.new.id && m.dataset_type === payload.new.dataset_type)
           if (idx >= 0) {
             const next = [...prev]
             next[idx] = payload.new
             return next
           }
-          return [...prev, payload.new].sort((a,b) => a.id.localeCompare(b.id))
+          return [...prev, payload.new]
         })
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, payload => {
@@ -97,8 +97,13 @@ export function FleetSimulationProvider({ children, dataset = 'bearing' }) {
     }
   }, [dataset, machines, selectedMachineId])
 
+  const contextValue = useMemo(
+    () => ({ machines, crews, events, monthlyReports, agentStatus, selectedMachineId, setSelectedMachineId }),
+    [machines, crews, events, monthlyReports, agentStatus, selectedMachineId]
+  )
+
   return (
-    <FleetSimulationContext.Provider value={{ machines, crews, events, monthlyReports, agentStatus, selectedMachineId, setSelectedMachineId }}>
+    <FleetSimulationContext.Provider value={contextValue}>
       {children}
     </FleetSimulationContext.Provider>
   )

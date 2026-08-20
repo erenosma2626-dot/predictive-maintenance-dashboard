@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { LiveService } from '../services/LiveService';
 
-export const useLiveStream = (dataset) => {
+export const useLiveStream = (dataset, enabled = true) => {
   const [currentData, setCurrentData] = useState(null);
   const [history, setHistory] = useState([]);
   const [logs, setLogs] = useState([]);
   const [isAlert, setIsAlert] = useState(false);
 
   useEffect(() => {
+    if (!enabled) return;
+
     // Handler for incoming data
     const handleNewData = (newData) => {
       if (!newData || !newData.sensors) return;
@@ -107,7 +109,7 @@ export const useLiveStream = (dataset) => {
         service.disconnect();
       };
     }
-  }, [dataset]);
+  }, [dataset, enabled]);
 
   return { currentData, history, logs, isAlert };
 };

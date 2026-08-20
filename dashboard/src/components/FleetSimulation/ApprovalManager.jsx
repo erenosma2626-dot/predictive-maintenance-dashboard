@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../services/supabaseClient'
+import { API_ENDPOINTS } from '../../config/api'
 
 export function ApprovalManager() {
   const [isApprovalEnabled, setIsApprovalEnabled] = useState(false)
@@ -34,12 +35,11 @@ export function ApprovalManager() {
 
     const checkPending = async () => {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001'
         const datasets = ['bearing', 'cmapss']
         const newPending = {}
         
         for (const ds of datasets) {
-          const res = await fetch(`${baseUrl}/pending-approvals/${ds}`)
+          const res = await fetch(API_ENDPOINTS.PENDING_APPROVALS(ds))
           if (res.ok) {
             const data = await res.json()
             if (data.pending && data.details) {
@@ -75,8 +75,7 @@ export function ApprovalManager() {
   const handleDecision = async (dataset, approved) => {
     setLoadingDecision(`${dataset}-${approved}`)
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001'
-      await fetch(`${baseUrl}/approve-dispatch/${dataset}?approved=${approved}`, {
+      await fetch(API_ENDPOINTS.APPROVE_DISPATCH(dataset, approved), {
         method: 'POST'
       })
       // Optimistically remove from state

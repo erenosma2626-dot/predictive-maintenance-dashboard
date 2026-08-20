@@ -33,22 +33,36 @@ class BearingKnowledgeStore:
             if os.path.exists(config.MANUAL_PATH):
                 with open(config.MANUAL_PATH, "r", encoding="utf-8") as f:
                     self.manual_text = f.read()
+
+            # Build fast lookup indices
+            self._asset_map: Dict[str, Dict[str, Any]] = {}
+            for a in self.assets:
+                aid = a.get("asset_id", "").upper()
+                if aid:
+                    self._asset_map[aid] = a
+                for al in a.get("aliases", []):
+                    self._asset_map[al.upper()] = a
+
+            self._fault_map: Dict[str, Dict[str, Any]] = {
+                f["fault_code"].upper(): f for f in self.fault_catalog if "fault_code" in f
+            }
+
+            self._history_map: Dict[str, List[Dict[str, Any]]] = {}
+            for h in self.history:
+                aid = h.get("asset_id", "").upper()
+                if aid:
+                    self._history_map.setdefault(aid, []).append(h)
+
         except Exception as e:
             print(f"[BearingKnowledgeStore] Error loading knowledge base: {e}")
 
     def get_asset(self, asset_id: str) -> Optional[Dict[str, Any]]:
         target = asset_id.strip().upper()
-        for a in self.assets:
-            if a["asset_id"].upper() == target or target in [al.upper() for al in a.get("aliases", [])]:
-                return a
-        return None
+        return self._asset_map.get(target)
 
     def get_fault_by_code(self, fault_code: str) -> Optional[Dict[str, Any]]:
         target = fault_code.strip().upper()
-        for f in self.fault_catalog:
-            if f["fault_code"].upper() == target:
-                return f
-        return None
+        return self._fault_map.get(target)
 
     def get_faults_by_category(self, category: str) -> List[Dict[str, Any]]:
         target = category.strip().lower()
@@ -56,7 +70,7 @@ class BearingKnowledgeStore:
 
     def get_history_for_asset(self, asset_id: str) -> List[Dict[str, Any]]:
         target = asset_id.strip().upper()
-        return [h for h in self.history if h["asset_id"].upper() == target]
+        return self._history_map.get(target, [])
 
     def resolve_query_context(self, question: str, target_asset_id: Optional[str] = None, target_fault_code: Optional[str] = None) -> Dict[str, Any]:
         """

@@ -1,5 +1,4 @@
 import React from 'react'
-import { FleetSimulationProvider } from '../contexts/FleetSimulationContext'
 import { BearingChatProvider } from '../contexts/BearingChatContext'
 import { Box1FleetOverview } from '../components/FleetSimulation/Box1FleetOverview'
 import { Box2Diagnosis } from '../components/FleetSimulation/Box2Diagnosis'
@@ -7,7 +6,6 @@ import { Box3PriorityQueue } from '../components/FleetSimulation/Box3PriorityQue
 import { Box4MonthlyReports } from '../components/FleetSimulation/Box4MonthlyReports'
 import { Box5CrewRoster } from '../components/FleetSimulation/Box5CrewRoster'
 import { AgentsStatusOverlay } from '../components/FleetSimulation/AgentsStatusOverlay'
-import { SimulationClock } from '../components/FleetSimulation/SimulationClock'
 import { FleetSimulationAboutPanel } from '../components/FleetSimulation/FleetSimulationAboutPanel'
 import { ApprovalManager } from '../components/FleetSimulation/ApprovalManager'
 import { ManualCrewModeController } from '../components/FleetSimulation/ManualCrewModeController'
@@ -63,7 +61,6 @@ export default function FleetSimulationPage({ dataset }) {
         </div>
 
         <AgentsStatusOverlay dataset={dataset} />
-        <SimulationClock dataset={dataset} />
 
         {dataset === 'bearing' && (
           <BearingCopilotModal

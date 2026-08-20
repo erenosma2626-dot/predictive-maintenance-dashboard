@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useFleetSimulation } from '../../contexts/FleetSimulationContext'
 import { useLanguage } from '../../contexts/LanguageContext'
+import { API_ENDPOINTS } from '../../config/api'
 
 export function Box4MonthlyReports({ dataset = 'bearing' }) {
   const { monthlyReports } = useFleetSimulation()
@@ -11,8 +12,7 @@ export function Box4MonthlyReports({ dataset = 'bearing' }) {
   const handleTriggerReport = async () => {
     setIsGenerating(true)
     try {
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001'
-      await fetch(`${baseUrl}/trigger-monthly-report?dataset_type=${dataset}`, {
+      await fetch(`${API_ENDPOINTS.TRIGGER_MONTHLY_REPORT}?dataset_type=${dataset}`, {
         method: 'POST'
       })
     } catch (e) {

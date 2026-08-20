@@ -133,24 +133,32 @@ def manual_dispatch_crew(req: ManualDispatchRequest):
     """
     Scene 5: Manually dispatches chosen crew to repair at-risk machine.
     """
-    from src.fleet_simulation_api import main as fleet_main
     try:
-        fleet_main.dispatch_crew(
+        try:
+            from simulation_engine import dispatch_crew, log_event, REPAIR_DURATION_TICKS
+        except ImportError:
+            import importlib
+            mod = importlib.import_module("src.fleet-simulation-api.simulation_engine")
+            dispatch_crew = mod.dispatch_crew
+            log_event = mod.log_event
+            REPAIR_DURATION_TICKS = mod.REPAIR_DURATION_TICKS
+
+        dispatch_crew(
             crew_id=req.crew_id,
             machine_id=req.machine_id,
             dataset_type=req.dataset_type,
         )
-        fleet_main.log_event(
+        log_event(
             machine_id=req.machine_id,
             event_type="dispatch_approved",
-            message=f"Manuel Operatör Sevk: {req.crew_id} -> {req.machine_id} onaylandı (5 tick onarım başladı).",
+            message=f"Manuel Operatör Sevk: {req.crew_id} -> {req.machine_id} onaylandı ({REPAIR_DURATION_TICKS} tick onarım başladı).",
             dataset_type=req.dataset_type,
             agent_name="manual_operator",
         )
         return {
             "success": True,
             "message": f"{req.crew_id} başarıyla {req.machine_id} makinesine sevk edildi.",
-            "ticks_remaining": fleet_main.REPAIR_DURATION_TICKS,
+            "ticks_remaining": REPAIR_DURATION_TICKS,
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
