@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import time
 import asyncio
@@ -234,7 +235,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+# Mount Bearing Copilot Router
+try:
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    if base_dir not in sys.path:
+        sys.path.insert(0, base_dir)
+    from src.bearing_assistant.router import router as bearing_assistant_router
+    app.include_router(bearing_assistant_router)
+    print("Bearing assistant router mounted successfully.")
+except Exception as e:
+    print(f"Could not mount bearing router: {e}")
+
+@app.api_route("/", methods=["GET", "HEAD"])
 def health_check():
     return {"status": "ok", "message": "Predictive Maintenance API is running."}
 
