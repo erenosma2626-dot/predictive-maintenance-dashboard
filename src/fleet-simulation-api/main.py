@@ -709,7 +709,7 @@ def set_simulation_paused(dataset_type: str, paused: bool):
     _simulation_paused[dataset_type] = paused
     return {"dataset_type": dataset_type, "paused": paused}
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def health_check():
     return {"status": "alive", "timestamp": datetime.utcnow().isoformat()}
 
